@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { Search, ChevronDown, Dumbbell, User } from 'lucide-react';
@@ -9,7 +9,7 @@ interface ExerciseStatsTabProps {
 }
 
 const exercises = [
-    { id: 1, name: 'Levantamento terra (com barra)', muscle: 'Glúteos', image: '/exercises/deadlift.jpg' },
+    { id: 1, name: 'Levantamento terra (com barra)', muscle: 'Glsteos', image: '/exercises/deadlift.jpg' },
     { id: 2, name: 'Supino inclinado (com halteres)', muscle: 'Peito', image: '/exercises/incline_bench.jpg' },
     { id: 3, name: 'Extensão de Pernas (Máquina)', muscle: 'Quadríceps', image: '/exercises/leg_ext.jpg' },
     { id: 4, name: 'Puxe para cima', muscle: 'Dorsais', image: '/exercises/pullup.jpg' },
@@ -41,7 +41,7 @@ export function ExerciseStatsTab({ student }: ExerciseStatsTabProps) {
                         <ChevronDown className="w-4 h-4 text-gray-500" />
                     </button>
                     <button className="flex-1 flex items-center justify-between px-3 py-2 bg-[#111] border border-white/10 rounded-lg text-sm text-white">
-                        Músculos
+                        Mssculos
                         <ChevronDown className="w-4 h-4 text-gray-500" />
                     </button>
                 </div>
@@ -126,7 +126,7 @@ export function ExerciseStatsTab({ student }: ExerciseStatsTabProps) {
                         <div className="flex justify-between items-center mb-6">
                             <h3 className="font-semibold text-gray-900">Visão geral das estatísticas</h3>
                             <button className="flex items-center gap-2 px-3 py-1.5 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50">
-                                Últimas 12 semanas
+                                sltimas 12 semanas
                                 <ChevronDown className="w-4 h-4" />
                             </button>
                         </div>

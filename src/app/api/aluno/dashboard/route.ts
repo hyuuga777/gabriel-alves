@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+﻿import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/lib/auth';
 
@@ -11,7 +11,7 @@ export async function GET(req: Request) {
 
         const userId = session.user.id;
 
-        // 1. Frequência Semanal (Últimos 7 dias)
+        // 1. Frequência Semanal (sltimos 7 dias)
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
@@ -22,24 +22,24 @@ export async function GET(req: Request) {
             }
         });
 
-        // Agrupar por dia para contar dias únicos de treino
+        // Agrupar por dia para contar dias snicos de treino
         const treinoDays = new Set(recentLogs.map(log => log.createdAt.toISOString().split('T')[0]));
         const weeklyFrequency = treinoDays.size;
 
-        // 2. Peso Atual (Última avaliação)
+        // 2. Peso Atual (sltima avaliação)
         const lastAssessment = await prisma.avaliacao.findFirst({
             where: { alunoId: userId, peso: { not: null } },
             orderBy: { data: 'desc' }
         });
 
-        // 3. Evolução (Comparar com penúltima avaliação ou mensagem "Inicial")
+        // 3. Evolução (Comparar com pensltima avaliação ou mensagem "Inicial")
         let weightDiff = 0;
         if (lastAssessment?.peso) {
             const previousAssessment = await prisma.avaliacao.findFirst({
                 where: {
                     alunoId: userId,
                     peso: { not: null },
-                    id: { not: lastAssessment.id }, // Ignorar a última
+                    id: { not: lastAssessment.id }, // Ignorar a sltima
                     data: { lt: lastAssessment.data } // Mais antiga
                 },
                 orderBy: { data: 'desc' }

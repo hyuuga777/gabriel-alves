@@ -1,4 +1,4 @@
-/**
+﻿/**
  * auth-helpers.ts
  * Helpers server-side para autenticação e multi-tenancy.
  * Compatível com NextAuth v5 (next-auth@5.x).
@@ -55,7 +55,7 @@ export async function requireRole(
 
 /**
  * Versão que retorna NextResponse em vez de lançar erro.
- * Útil para routes que preferem retornar JSON diretamente.
+ * stil para routes que preferem retornar JSON diretamente.
  *
  * @example
  * const result = await requireRoleSafe('TREINADOR');

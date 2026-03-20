@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { PublicNavbar } from '@/components/public-navbar';
@@ -65,7 +65,7 @@ export default function AssinarPage() {
     const faqs = [
         {
             question: 'Como funciona a avaliação física?',
-            answer: 'Nossa engine exclusiva utiliza seus dados (peso, medidas, fotos) para calcular sua composição corporal e métricas de saúde com precisão científica. Você pode atualizar seus dados mensalmente para acompanhar a evolução.'
+            answer: 'Nossa engine exclusiva utiliza seus dados (peso, medidas, fotos) para calcular sua composição corporal e métricas de sasde com precisão científica. Você pode atualizar seus dados mensalmente para acompanhar a evolução.'
         },
         {
             question: 'O treino é realmente personalizado?',
@@ -76,8 +76,8 @@ export default function AssinarPage() {
             answer: 'No plano mensal, o cancelamento é a qualquer momento sem multa. Nos planos trimestral e anual, há uma taxa proporcional ao tempo restante do contrato caso cancele antes do final.'
         },
         {
-            question: 'Tenho suporte de dúvidas?',
-            answer: 'Com certeza! Todos os planos incluem acesso ao chat com nossos especialistas para tirar dúvidas sobre execução de exercícios ou ajustes na rotina.'
+            question: 'Tenho suporte de dsvidas?',
+            answer: 'Com certeza! Todos os planos incluem acesso ao chat com nossos especialistas para tirar dsvidas sobre execução de exercícios ou ajustes na rotina.'
         }
     ];
 

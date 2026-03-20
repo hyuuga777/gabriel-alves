@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
@@ -185,7 +185,7 @@ export default function StudentChatPage() {
                     type="text"
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="Tire suas dúvidas..."
+                    placeholder="Tire suas dsvidas..."
                     className="flex-1 bg-[#1a1a1a] border border-white/10 rounded-lg px-4 text-white focus:outline-none focus:border-primary"
                 />
                 <button

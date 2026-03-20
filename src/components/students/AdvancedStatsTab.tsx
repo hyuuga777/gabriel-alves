@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { BarChart3, Clock, Scale, Layers, Calendar, ChevronDown } from 'lucide-react';
@@ -44,11 +44,11 @@ const muscleGroups = [
     { name: 'Bíceps', total: 28, color: '#eab308', checked: true },
     { name: 'Tríceps', total: 27, color: '#9ca3af', checked: false },
     { name: 'Peito', total: 27, color: '#a855f7', checked: true },
-    { name: 'Músculos isquiotibiais', total: 21, color: '#9ca3af', checked: false },
+    { name: 'Mssculos isquiotibiais', total: 21, color: '#9ca3af', checked: false },
 ];
 
 const statsTypes = [
-    { id: 'muscles', label: 'Número de séries por grupo muscular', icon: BarChart3 },
+    { id: 'muscles', label: 'Nsmero de séries por grupo muscular', icon: BarChart3 },
     { id: 'duration', label: 'Duração', icon: Clock },
     { id: 'volume', label: 'Volume', icon: Scale },
     { id: 'sets', label: 'Conjuntos', icon: Layers },
@@ -131,7 +131,7 @@ export function AdvancedStatsTab({ student }: AdvancedStatsTabProps) {
                             <div className="relative">
                                 <button className="flex items-center gap-2 px-3 py-1.5 border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-50 bg-white">
                                     <Calendar className="w-4 h-4 text-gray-500" />
-                                    Últimos 3 meses
+                                    sltimos 3 meses
                                     <ChevronDown className="w-3 h-3 text-gray-400" />
                                 </button>
                             </div>

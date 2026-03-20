@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { PublicNavbar } from '@/components/public-navbar';
 import { Footer } from '@/components/footer';
@@ -15,7 +15,7 @@ export default function ContatoPage() {
                     <div className="text-center mb-16">
                         <h1 className="text-4xl font-bold mb-6">Fale Conosco</h1>
                         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                            Dúvidas sobre os planos? Quer saber mais sobre a metodologia?
+                            Dsvidas sobre os planos? Quer saber mais sobre a metodologia?
                             Nossa equipe está pronta para te atender.
                         </p>
                     </div>
@@ -90,7 +90,7 @@ export default function ContatoPage() {
                                 <div>
                                     <label className="block text-sm font-medium mb-2">Assunto</label>
                                     <select className="w-full p-3 rounded-lg bg-input border border-border focus:ring-2 focus:ring-primary outline-none transition-all">
-                                        <option>Dúvida sobre Planos</option>
+                                        <option>Dsvida sobre Planos</option>
                                         <option>Suporte Técnico</option>
                                         <option>Parcerias</option>
                                         <option>Outros</option>

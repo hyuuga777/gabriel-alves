@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
@@ -125,7 +125,7 @@ export default function Home() {
               {
                 icon: MessageCircle,
                 title: 'Chat com Treinador',
-                description: 'Comunicação direta para tirar dúvidas e receber feedback personalizado'
+                description: 'Comunicação direta para tirar dsvidas e receber feedback personalizado'
               },
               {
                 icon: TrendingUp,

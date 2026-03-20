@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
@@ -127,7 +127,7 @@ export default function AdminChatPage() {
             if (res.ok) {
                 const sentMessage = await res.json();
                 setMessages(prev => prev.map(m => m.id === tempData.id ? sentMessage : m));
-                fetchContacts(); // Atualizar última mensagem na lista
+                fetchContacts(); // Atualizar sltima mensagem na lista
             }
         } catch (error) {
             console.error('Failed to send message', error);

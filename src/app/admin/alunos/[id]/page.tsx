@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { Suspense, use, useState } from 'react';
 import Link from 'next/link';
@@ -112,7 +112,7 @@ function AdminAlunoPerfil({ id }: { id: string }) {
                 ))}
             </div>
 
-            {/* 3. Conteúdo da Aba */}
+            {/* 3. Contesdo da Aba */}
             <div className="pt-2">
                 {activeTab === 'visao-geral' && <AbaVisaoGeral aluno={aluno} />}
                 {activeTab === 'treinos' && <AbaTreinos treinos={MOCK_TREINOS} />}
@@ -179,7 +179,7 @@ function AbaVisaoGeral({ aluno }: { aluno: any }) {
                     <p className="text-sm text-white font-medium">{aluno.treinosTotal} treinos</p>
                 </div>
                 <div>
-                    <p className="text-xs text-gray-500">Último Acesso</p>
+                    <p className="text-xs text-gray-500">sltimo Acesso</p>
                     <p className="text-sm text-white font-medium">{aluno.ultimoTreino}</p>
                 </div>
             </div>

@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+﻿import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { hash } from 'bcryptjs';
 
@@ -38,10 +38,10 @@ export async function GET() {
             { nome: 'Crucifixo na Máquina', grupo: ['Peito'], video: '' },
             { nome: 'Puxada Alta Aberta', grupo: ['Costas'], video: '' },
             { nome: 'Remada Curvada', grupo: ['Costas', 'Bíceps'], video: '' },
-            { nome: 'Levantamento Terra', grupo: ['Costas', 'Posterior', 'Glúteos'], video: '' },
+            { nome: 'Levantamento Terra', grupo: ['Costas', 'Posterior', 'Glsteos'], video: '' },
             { nome: 'Desenvolvimento Militar', grupo: ['Ombros'], video: '' },
             { nome: 'Elevação Lateral', grupo: ['Ombros'], video: '' },
-            { nome: 'Agachamento Livre', grupo: ['Quadríceps', 'Glúteos'], video: '' },
+            { nome: 'Agachamento Livre', grupo: ['Quadríceps', 'Glsteos'], video: '' },
             { nome: 'Leg Press 45', grupo: ['Quadríceps'], video: '' },
             { nome: 'Cadeira Extensora', grupo: ['Quadríceps'], video: '' },
             { nome: 'Mesa Flexora', grupo: ['Posterior'], video: '' },

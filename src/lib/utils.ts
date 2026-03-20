@@ -1,4 +1,4 @@
-import { clsx, type ClassValue } from "clsx"
+﻿import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
@@ -32,7 +32,7 @@ export function formatarDataHora(data: Date | string): string {
 }
 
 /**
- * Formata número como moeda brasileira
+ * Formata nsmero como moeda brasileira
  */
 export function formatarMoeda(valor: number): string {
     return new Intl.NumberFormat('pt-BR', {
@@ -51,7 +51,7 @@ export function formatarTempo(segundos: number): string {
 }
 
 /**
- * Converte dia da semana de número para nome
+ * Converte dia da semana de nsmero para nome
  */
 export function nomeDiaSemana(dia: number): string {
     const dias = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];

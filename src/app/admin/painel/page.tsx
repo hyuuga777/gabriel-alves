@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { motion } from 'framer-motion';
 import {
@@ -167,7 +167,7 @@ export default function AdminDashboard() {
                 <Icon className="w-5 h-5" style={{ color: kpi.accent }} />
               </div>
 
-              {/* Conteúdo */}
+              {/* Contesdo */}
               <div className="relative z-10">
                 <p className="text-xs text-gray-400 font-medium uppercase tracking-widest">
                   {kpi.label}
@@ -208,7 +208,7 @@ export default function AdminDashboard() {
           <div className="flex items-start justify-between mb-6">
             <div>
               <h2 className="text-base font-bold text-white">
-                Receita — Últimos 6 Meses
+                Receita — sltimos 6 Meses
               </h2>
               <p className="text-xs text-gray-500 mt-0.5">
                 Desempenho de novas assinaturas
@@ -256,7 +256,7 @@ export default function AdminDashboard() {
           </div>
         </motion.div>
 
-        {/* Últimas Atividades */}
+        {/* sltimas Atividades */}
         <motion.div
           variants={item}
           className="rounded-2xl border border-white/8 p-6 flex flex-col"
@@ -268,7 +268,7 @@ export default function AdminDashboard() {
         >
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-base font-bold text-white">
-              Últimas Atividades
+              sltimas Atividades
             </h2>
             <History className="w-4 h-4 text-gray-500" />
           </div>

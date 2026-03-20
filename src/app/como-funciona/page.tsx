@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { motion } from 'framer-motion';
 import { PublicNavbar } from '@/components/public-navbar';
@@ -74,7 +74,7 @@ export default function ComoFuncionaPage() {
                                 className={`flex flex-col md:flex-row items-center gap-8 ${index % 2 === 0 ? 'md:flex-row-reverse' : ''
                                     }`}
                             >
-                                {/* Conteúdo */}
+                                {/* Contesdo */}
                                 <div className="flex-1 text-center md:text-left">
                                     <div className={`inline-flex p-3 rounded-xl mb-4 ${step.bg} md:hidden`}>
                                         <step.icon className={`w-8 h-8 ${step.color}`} />

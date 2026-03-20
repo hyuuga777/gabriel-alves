@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { MoreVertical, MessageSquare, Dumbbell, X, Edit, Ban, Trash2 } from 'lucide-react';
 
 interface StudentHeaderProps {
@@ -45,7 +45,7 @@ export function StudentHeader({ student, onRegisterWorkout, onSendMessage }: Stu
                         <div className="text-sm text-gray-400 space-y-0.5">
                             <p>{student.email}</p>
                             <p className="text-xs text-gray-500">
-                                Último treino: {student.lastWorkout || '16 dias atrás'}
+                                sltimo treino: {student.lastWorkout || '16 dias atrás'}
                             </p>
                         </div>
                     </div>

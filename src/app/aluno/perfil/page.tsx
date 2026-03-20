@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useSession } from 'next-auth/react';
 import { User, Lock, Camera, Trash2, Eye, EyeOff, Save, Shield, Settings, AlertCircle } from 'lucide-react';
@@ -173,7 +173,7 @@ export default function StudentProfilePage() {
                             <div className="space-y-2">
                                 <label className="text-sm font-medium text-gray-300">Endereço Completo</label>
                                 <textarea
-                                    placeholder="Rua, Número, Bairro, Cidade - UF"
+                                    placeholder="Rua, Nsmero, Bairro, Cidade - UF"
                                     rows={3}
                                     className="w-full bg-[#111] border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-primary resize-none"
                                 />

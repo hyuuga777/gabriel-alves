@@ -1,4 +1,4 @@
-import { Usuario, Treino, AssinaturaStatus, PontoEvolucao, LogExecucao } from '@/types';
+﻿import { Usuario, Treino, AssinaturaStatus, PontoEvolucao, LogExecucao } from '@/types';
 
 export const MOCK_ALUNO: Usuario = {
     id: 'aluno-12345',
@@ -149,7 +149,7 @@ export const MOCK_LOGS: LogExecucao[] = [
         data: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 dias atrás
         cargaUtilizada: 60,
         rpe: 8,
-        feedback: 'Consegui fazer as 10 repetições mas a última saiu no limite.'
+        feedback: 'Consegui fazer as 10 repetições mas a sltima saiu no limite.'
     },
     {
         id: 'log-2',

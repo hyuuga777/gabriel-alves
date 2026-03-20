@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useSearchParams } from 'next/navigation';
 import { PublicNavbar } from '@/components/public-navbar';
@@ -65,7 +65,7 @@ function CheckoutContent() {
                             <input type="text" className="w-full p-3 rounded-lg bg-input border border-border focus:ring-2 focus:ring-primary outline-none" placeholder="Nome da rua" />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-sm font-medium">Número</label>
+                            <label className="text-sm font-medium">Nsmero</label>
                             <input type="text" className="w-full p-3 rounded-lg bg-input border border-border focus:ring-2 focus:ring-primary outline-none" placeholder="123" />
                         </div>
                         <div className="space-y-2">
@@ -111,7 +111,7 @@ function CheckoutContent() {
 
                     <div className="space-y-4">
                         <div className="space-y-2">
-                            <label className="text-sm font-medium">Número do Cartão</label>
+                            <label className="text-sm font-medium">Nsmero do Cartão</label>
                             <input type="text" className="w-full p-3 rounded-lg bg-input border border-border focus:ring-2 focus:ring-primary outline-none" placeholder="0000 0000 0000 0000" />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
