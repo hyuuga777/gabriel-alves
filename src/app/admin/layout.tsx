@@ -20,6 +20,7 @@ import { MOCK_ALUNO } from '@/lib/mock-db'; // Using mock user temporarily for t
 
 const MENU_ITEMS = [
     { name: 'Dashboard', href: '/admin/painel', icon: LayoutDashboard },
+    { name: 'Planos', href: '/admin/planos', icon: DollarSign },
     { name: 'Usuários', href: '/admin/usuarios', icon: Users },
     { name: 'Alunos', href: '/admin/alunos', icon: Users },
     { name: 'Treinos', href: '/admin/treinos', icon: Dumbbell },

@@ -304,15 +304,38 @@ export default function AdminPlansPage() {
                                 />
                             </div>
 
-                            <div className="flex items-center gap-2 pt-2">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="flex items-center gap-2 pt-2">
+                                    <input
+                                        type="checkbox"
+                                        id="gradient"
+                                        checked={currentPlan.gradient}
+                                        onChange={e => setCurrentPlan({ ...currentPlan, gradient: e.target.checked })}
+                                        className="w-4 h-4 rounded border-gray-600 text-primary focus:ring-primary bg-gray-800"
+                                    />
+                                    <label htmlFor="gradient" className="text-sm text-gray-300">Destacar este plano (Borda e Gradiente)</label>
+                                </div>
+                                <div className="flex items-center gap-2 pt-2">
+                                    <input
+                                        type="checkbox"
+                                        id="highlight"
+                                        checked={currentPlan.highlight}
+                                        onChange={e => setCurrentPlan({ ...currentPlan, highlight: e.target.checked })}
+                                        className="w-4 h-4 rounded border-gray-600 text-primary focus:ring-primary bg-gray-800"
+                                    />
+                                    <label htmlFor="highlight" className="text-sm text-gray-300">Marcar como "Destaque" (Fundo diferenciado)</label>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-400 mb-1">Texto de Destaque (Badge Superior)</label>
                                 <input
-                                    type="checkbox"
-                                    id="gradient"
-                                    checked={currentPlan.gradient}
-                                    onChange={e => setCurrentPlan({ ...currentPlan, gradient: e.target.checked })}
-                                    className="w-4 h-4 rounded border-gray-600 text-primary focus:ring-primary bg-gray-800"
+                                    type="text"
+                                    value={currentPlan.highlightText || ''}
+                                    onChange={e => setCurrentPlan({ ...currentPlan, highlightText: e.target.value })}
+                                    className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none"
+                                    placeholder="Ex: MAIS VENDIDO, RECOMENDADO"
                                 />
-                                <label htmlFor="gradient" className="text-sm text-gray-300">Destacar este plano (Borda e Gradiente)</label>
                             </div>
                         </div>
 

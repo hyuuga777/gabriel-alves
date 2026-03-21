@@ -63,7 +63,11 @@ export async function GET() {
                     take: 1
                 },
                 assinatura: {
-                    select: { status: true }
+                    select: { 
+                        status: true,
+                        dataFim: true,
+                        plano: { select: { nome: true } }
+                    }
                 },
                 treinoLogs: {
                     where: {
@@ -96,7 +100,7 @@ export async function POST(req: Request) {
         }
 
         const body = await req.json();
-        const { name, email, password, telefone } = body;
+        const { name, email, password, telefone, planoId } = body;
 
         if (!name || !email || !password) {
             return new NextResponse("Missing required fields", { status: 400 });
@@ -112,9 +116,31 @@ export async function POST(req: Request) {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // Calculate subscription end date if plan is provided
+        let dataFim = null;
+        if (planoId) {
+            const plano = await prisma.plano.findUnique({
+                where: { id: planoId }
+            });
+
+            if (plano) {
+                dataFim = new Date();
+                const intervalo = plano.intervalo.toLowerCase();
+                if (intervalo.includes('mensal') || intervalo === 'mês') {
+                    dataFim.setMonth(dataFim.getMonth() + 1);
+                } else if (intervalo.includes('trimestral')) {
+                    dataFim.setMonth(dataFim.getMonth() + 3);
+                } else if (intervalo.includes('anual') || intervalo === 'ano') {
+                    dataFim.setFullYear(dataFim.getFullYear() + 1);
+                } else {
+                    // Default to 1 month if unknown
+                    dataFim.setMonth(dataFim.getMonth() + 1);
+                }
+            }
+        }
+
         // Placeholder date for required field
         const defaultDate = new Date();
-        // defaultDate.setFullYear(2000); 
 
         const user = await prisma.user.create({
             data: {
@@ -132,7 +158,15 @@ export async function POST(req: Request) {
                         nivelAtividade: 'Iniciante',
                         objetivos: [],
                     }
-                }
+                },
+                assinatura: planoId ? {
+                    create: {
+                        planoId,
+                        status: 'ATIVA',
+                        dataInicio: new Date(),
+                        dataFim
+                    }
+                } : undefined
             }
         });
 

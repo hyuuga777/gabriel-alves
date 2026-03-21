@@ -1,49 +1,86 @@
-import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { auth } from "@/lib/auth.config";
+import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
 
-export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function PUT(
+    req: Request,
+    { params }: { params: { id: string } }
+) {
     try {
-        const { id } = await params;
-        const body = await request.json();
+        const session = await auth();
 
-        const updatedPlano = await prisma.plano.update({
+        if (!session || session.user.role !== 'ADMIN') {
+            return new NextResponse("Unauthorized", { status: 401 });
+        }
+
+        const body = await req.json();
+        const { id } = params;
+
+        const { 
+            name, 
+            descricao, 
+            price, 
+            period, 
+            features, 
+            active, 
+            highlight, 
+            highlightText, 
+            discount, 
+            gradient 
+        } = body;
+
+        const plan = await prisma.plano.update({
             where: { id },
             data: {
-                nome: body.name,
-                preco: parseFloat(body.price.toString().replace(',', '.')),
-                intervalo: body.period,
-                recursos: body.features,
-                destaque: body.highlight,
-                textoDestaque: body.highlightText || null,
-                desconto: body.discount || null,
-                gradiente: body.gradient
+                name,
+                descricao,
+                price: price !== undefined ? (typeof price === 'string' ? parseFloat(price.replace(',', '.')) : price) : undefined,
+                period,
+                features,
+                active,
+                highlight,
+                highlightText,
+                desconto: discount,
+                gradient,
             }
         });
 
-        return NextResponse.json({
-            id: updatedPlano.id,
-            name: updatedPlano.nome,
-            price: updatedPlano.preco.toString(),
-            period: updatedPlano.intervalo,
-            features: updatedPlano.recursos,
-            highlight: updatedPlano.destaque,
-            highlightText: updatedPlano.textoDestaque,
-            discount: updatedPlano.desconto,
-            gradient: updatedPlano.gradiente
-        });
+        return NextResponse.json(plan);
     } catch (error) {
-        console.error('Error updating plan:', error);
-        return NextResponse.json({ error: 'Failed to update plan' }, { status: 500 });
+        console.error("[ADMIN_PLAN_PUT]", error);
+        return new NextResponse("Internal Error", { status: 500 });
     }
 }
 
-export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(
+    req: Request,
+    { params }: { params: { id: string } }
+) {
     try {
-        const { id } = await params;
-        await prisma.plano.delete({ where: { id } });
-        return NextResponse.json({ success: true });
+        const session = await auth();
+
+        if (!session || session.user.role !== 'ADMIN') {
+            return new NextResponse("Unauthorized", { status: 401 });
+        }
+
+        const { id } = params;
+
+        // Check if there are subscriptions for this plan
+        const subscriptionsCount = await prisma.assinatura.count({
+            where: { planoId: id }
+        });
+
+        if (subscriptionsCount > 0) {
+            return new NextResponse("Cannot delete plan with active subscriptions", { status: 400 });
+        }
+
+        await prisma.plano.delete({
+            where: { id }
+        });
+
+        return new NextResponse(null, { status: 204 });
     } catch (error) {
-        console.error('Error deleting plan:', error);
-        return NextResponse.json({ error: 'Failed to delete plan' }, { status: 500 });
+        console.error("[ADMIN_PLAN_DELETE]", error);
+        return new NextResponse("Internal Error", { status: 500 });
     }
 }

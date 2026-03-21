@@ -111,7 +111,45 @@ export async function PUT(
         }
 
         const body = await request.json();
-        const { treinoId } = body;
+        const { treinoId, planoId } = body;
+
+        // Atualizar Plano se fornecido
+        if (planoId) {
+            const plano = await prisma.plano.findUnique({
+                where: { id: planoId }
+            });
+
+            if (plano) {
+                const dataInicio = new Date();
+                const dataFim = new Date();
+
+                const intervaloMap: Record<string, number> = {
+                    'mensal': 1,
+                    'trimestral': 3,
+                    'semestral': 6,
+                    'anual': 12
+                };
+
+                const meses = intervaloMap[plano.intervalo.toLowerCase()] || 1;
+                dataFim.setMonth(dataFim.getMonth() + meses);
+
+                await prisma.assinatura.upsert({
+                    where: { userId: id },
+                    create: {
+                        userId: id,
+                        planoId: plano.id,
+                        status: 'ATIVA',
+                        dataInicio,
+                        dataFim
+                    },
+                    update: {
+                        planoId: plano.id,
+                        status: 'ATIVA',
+                        dataFim
+                    }
+                });
+            }
+        }
 
         // Example update logic for assigning workout
         if (treinoId) {
@@ -130,10 +168,10 @@ export async function PUT(
                     diasSemana: []
                 }
             });
-            return NextResponse.json(assignment);
+            return NextResponse.json({ message: "Updated workout and plan", ...assignment });
         }
 
-        return NextResponse.json({ message: "No changes" });
+        return NextResponse.json({ message: "User updated" });
 
     } catch (error) {
         console.error("Error updating user:", error);

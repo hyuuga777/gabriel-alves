@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Save, ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react';
@@ -16,8 +16,26 @@ export default function NewStudentPage() {
         email: '',
         telefone: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        planoId: '',
     });
+
+    const [planos, setPlanos] = useState<any[]>([]);
+
+    useEffect(() => {
+        const fetchPlanos = async () => {
+            try {
+                const response = await fetch('/api/admin/plans');
+                if (response.ok) {
+                    const data = await response.json();
+                    setPlanos(data);
+                }
+            } catch (error) {
+                console.error("Failed to fetch plans", error);
+            }
+        };
+        fetchPlanos();
+    }, []);
 
     const [error, setError] = useState('');
 
@@ -47,7 +65,8 @@ export default function NewStudentPage() {
                     name: formData.name,
                     email: formData.email,
                     telefone: formData.telefone,
-                    password: formData.password
+                    password: formData.password,
+                    planoId: formData.planoId || null
                 }),
             });
 
@@ -131,6 +150,23 @@ export default function NewStudentPage() {
                             placeholder="Ex: (11) 99999-9999"
                         />
                     </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-1">Plano de Assinatura</label>
+                        <select
+                            value={formData.planoId}
+                            onChange={e => setFormData({ ...formData, planoId: e.target.value })}
+                            className="w-full bg-[#1a1a1a] border border-white/5 rounded-lg py-3 px-4 focus:outline-none focus:ring-1 focus:ring-primary text-gray-300 appearance-none cursor-pointer hover:bg-white/5 transition-colors"
+                        >
+                            <option value="">Selecione um plano (Opcional)</option>
+                            {planos.map((plano) => (
+                                <option key={plano.id} value={plano.id} className="bg-[#1a1a1a]">
+                                    {plano.name} - R$ {plano.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>

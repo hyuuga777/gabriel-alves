@@ -1,14 +1,42 @@
-'use client';
-
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Target, Activity, Heart, ShieldCheck, CheckCircle2, Zap, ArrowRight, Check, Star, Video, MessageCircle, FileText, Dumbbell } from 'lucide-react';
+import { Target, Activity, Heart, ShieldCheck, CheckCircle2, Zap, ArrowRight, Check, Star, Video, MessageCircle, FileText, Dumbbell, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { PublicNavbar } from '@/components/public-navbar';
 import { Footer } from '@/components/footer';
 
+interface Plan {
+  id: string;
+  name: string;
+  descricao: string | null;
+  price: number;
+  period: string;
+  features: any;
+  highlight: boolean;
+  highlightText: string | null;
+  gradient: boolean;
+}
+
 export default function Home() {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchPlans() {
+      try {
+        const response = await fetch('/api/plans');
+        const data = await response.json();
+        setPlans(data);
+      } catch (error) {
+        console.error('Error fetching plans:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchPlans();
+  }, []);
+
   return (
     <div className="min-h-screen">
       <PublicNavbar />
@@ -234,98 +262,75 @@ export default function Home() {
           </motion.div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            {/* Basic Plan */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="glass rounded-3xl p-8 hover-lift flex flex-col relative"
-            >
-              <h3 className="text-3xl font-bold mb-2">Plano Basic</h3>
-              <p className="text-muted-foreground mb-8">O essencial com excelência.</p>
-              
-              <div className="space-y-6 mb-8 flex-grow">
-                <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
-                  <div className="text-sm text-muted-foreground mb-1">Mensal</div>
-                  <div className="text-3xl font-bold">R$ 359<span className="text-lg text-muted-foreground">,00 /mês</span></div>
-                  <Link href="/checkout?plan=basic-mensal" className="mt-3 block w-full py-2.5 rounded-lg border border-primary text-primary text-center font-semibold hover:bg-primary/10 transition-colors">Assinar Mensal</Link>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-gradient-to-br from-primary/10 to-transparent border border-primary/30 relative overflow-hidden">
-                  <div className="absolute top-0 right-0 bg-primary/20 text-primary text-xs font-bold px-3 py-1 rounded-bl-lg">MAIS POPULAR</div>
-                  <div className="text-sm text-primary mb-1 font-medium">Semestral</div>
-                  <div className="text-3xl font-bold">6x R$ 335<span className="text-lg text-muted-foreground">,00</span></div>
-                  <div className="text-sm text-muted-foreground mt-1">Total: R$ 2.010,00</div>
-                  <Link href="/checkout?plan=basic-semestral" className="mt-3 block w-full py-2.5 rounded-lg gradient-primary text-center font-semibold hover:opacity-90 transition-colors shadow-lg shadow-primary/20">Assinar Semestral</Link>
-                </div>
+            {isLoading ? (
+              <div className="col-span-2 flex flex-col items-center justify-center py-20 gap-4">
+                <Loader2 className="w-10 h-10 text-primary animate-spin" />
+                <p className="text-muted-foreground animate-pulse">Carregando planos exclusivos...</p>
               </div>
+            ) : (
+              plans.map((plan, index) => {
+                const isUltra = plan.name.toLowerCase().includes('ultra') || plan.name.toLowerCase().includes('vip');
+                const slug = plan.name.toLowerCase().replace(/\s+/g, '-');
+                
+                return (
+                  <motion.div
+                    key={plan.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                    className={`glass rounded-3xl p-8 hover-lift flex flex-col relative ${
+                      isUltra ? 'border border-accent/30 shadow-[0_0_50px_-12px_rgba(74,222,213,0.3)]' : ''
+                    }`}
+                  >
+                    {plan.highlight && (
+                      <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 gradient-accent rounded-full text-sm font-bold shadow-lg text-black w-max">
+                        {plan.highlightText || 'DESTAQUE'}
+                      </div>
+                    )}
+                    
+                    <h3 className="text-3xl font-bold mb-2">{plan.name}</h3>
+                    <p className="text-muted-foreground mb-8">{plan.descricao}</p>
+                    
+                    <div className="space-y-6 mb-8 flex-grow">
+                      <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
+                        <div className="text-sm text-muted-foreground mb-1 capitalize">{plan.period}</div>
+                        <div className="text-3xl font-bold">
+                          R$ {plan.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                          <span className="text-lg text-muted-foreground"> /{plan.period === 'mensal' ? 'mês' : plan.period}</span>
+                        </div>
+                        <Link 
+                          href={`/checkout?plan=${slug}-mensal`} 
+                          className={`mt-3 block w-full py-2.5 rounded-lg border text-center font-semibold transition-colors ${
+                            isUltra ? 'border-accent text-accent hover:bg-accent/10' : 'border-primary text-primary hover:bg-primary/10'
+                          }`}
+                        >
+                          Assinar Mensal
+                        </Link>
+                      </div>
+                    </div>
 
-              <div className="border-t border-white/10 pt-6">
-                <h4 className="font-semibold mb-4 text-sm uppercase tracking-wider text-muted-foreground">O que inclui:</h4>
-                <ul className="space-y-4">
-                  {[
-                    'Rotina de treino 100% adaptada',
-                    'Dúvidas via WhatsApp (Seg-Sex)',
-                    'Feedback de vídeos enviados',
-                    'Correção Biomecânica profunda (1x semana)',
-                    'Materiais complementares (PDFs)'
-                  ].map((feature, idx) => (
-                    <li key={idx} className="flex gap-3 text-sm">
-                      <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />
-                      <span className="text-foreground/90">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </motion.div>
-
-            {/* Ultra Plan */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="glass rounded-3xl p-8 hover-lift flex flex-col relative border border-accent/30 shadow-[0_0_50px_-12px_rgba(74,222,213,0.3)]"
-            >
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 gradient-accent rounded-full text-sm font-bold shadow-lg text-black w-max">
-                ACOMPANHAMENTO VIP
-              </div>
-              
-              <h3 className="text-3xl font-bold mb-2">Plano Ultra</h3>
-              <p className="text-muted-foreground mb-8">Máximo contato e personalização.</p>
-              
-              <div className="space-y-6 mb-8 flex-grow">
-                <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
-                  <div className="text-sm text-muted-foreground mb-1">Mensal</div>
-                  <div className="text-3xl font-bold">R$ 432<span className="text-lg text-muted-foreground">,00 /mês</span></div>
-                  <Link href="/checkout?plan=ultra-mensal" className="mt-3 block w-full py-2.5 rounded-lg border border-accent text-accent text-center font-semibold hover:bg-accent/10 transition-colors">Assinar Mensal</Link>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-gradient-to-br from-accent/10 to-transparent border border-accent/30">
-                  <div className="text-sm text-accent mb-1 font-medium">Semestral</div>
-                  <div className="text-3xl font-bold">6x R$ 380<span className="text-lg text-muted-foreground">,00</span></div>
-                  <div className="text-sm text-muted-foreground mt-1">Total: R$ 2.228,00</div>
-                  <Link href="/checkout?plan=ultra-semestral" className="mt-3 block w-full py-2.5 rounded-lg gradient-accent text-black text-center font-bold hover:opacity-90 transition-colors shadow-lg shadow-accent/20">Assinar VIP Semestral</Link>
-                </div>
-              </div>
-
-              <div className="border-t border-white/10 pt-6">
-                <h4 className="font-semibold mb-4 text-sm uppercase tracking-wider text-muted-foreground">Tudo do Basic, MAIS:</h4>
-                <ul className="space-y-4">
-                  {[
-                    'Videochamada inicial de 1 hora p/ alinhamento',
-                    'Resposta a dúvidas TODOS os dias',
-                    'Contato semanal PROATIVO (Nós chamamos você)',
-                    'Comunicação 100% via áudio/vídeo',
-                    'Prioridade máxima de atendimento'
-                  ].map((feature, idx) => (
-                    <li key={idx} className="flex gap-3 text-sm font-medium">
-                      <Star className="w-5 h-5 text-accent shrink-0 fill-accent/20" />
-                      <span className="text-foreground">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </motion.div>
+                    <div className="border-t border-white/10 pt-6">
+                      <h4 className="font-semibold mb-4 text-sm uppercase tracking-wider text-muted-foreground">
+                        {isUltra ? 'Tudo do Basic, MAIS:' : 'O que inclui:'}
+                      </h4>
+                      <ul className="space-y-4">
+                        {(Array.isArray(plan.features) ? plan.features : []).map((feature: string, idx: number) => (
+                          <li key={idx} className="flex gap-3 text-sm">
+                            {isUltra ? (
+                              <Star className="w-5 h-5 text-accent shrink-0 fill-accent/20" />
+                            ) : (
+                              <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />
+                            )}
+                            <span className={isUltra ? "text-foreground font-medium" : "text-foreground/90"}>{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </motion.div>
+                );
+              })
+            )}
           </div>
         </div>
       </section>

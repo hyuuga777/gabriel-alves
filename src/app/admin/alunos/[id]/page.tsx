@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { Suspense, use, useState } from 'react';
 import Link from 'next/link';
@@ -41,10 +41,41 @@ export default function AdminAlunoPerfilWrapper({ params }: Props) {
 
 function AdminAlunoPerfil({ id }: { id: string }) {
     const [activeTab, setActiveTab] = useState<TabType>('visao-geral');
+    const [aluno, setAluno] = useState<any>(null);
+    const [planos, setPlanos] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    // Finding mockup
-    // If we passed an id that is not 1, fallback to first just to show visual layout without empty crashing for now
-    const aluno = MOCK_ALUNOS_LISTA.find(a => a.id === id) || MOCK_ALUNOS_LISTA[0];
+    const fetchData = async () => {
+        try {
+            setLoading(true);
+            const [alunoRes, planosRes] = await Promise.all([
+                fetch(`/api/admin/users/${id}`),
+                fetch('/api/admin/plans')
+            ]);
+
+            if (!alunoRes.ok) throw new Error('Erro ao carregar aluno');
+            const alunoData = await alunoRes.json();
+            setAluno(alunoData);
+
+            if (planosRes.ok) {
+                const planosData = await planosRes.json();
+                setPlanos(planosData);
+            }
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useState(() => {
+        fetchData();
+    });
+
+    if (loading) return <div className="p-8 text-white">Carregando Perfil...</div>;
+    if (error) return <div className="p-8 text-red-500">Erro: {error}</div>;
+    if (!aluno) return <div className="p-8 text-white">Aluno não encontrado.</div>;
 
     return (
         <div className="space-y-6">
@@ -115,16 +146,18 @@ function AdminAlunoPerfil({ id }: { id: string }) {
             {/* 3. Contesdo da Aba */}
             <div className="pt-2">
                 {activeTab === 'visao-geral' && <AbaVisaoGeral aluno={aluno} />}
-                {activeTab === 'treinos' && <AbaTreinos treinos={MOCK_TREINOS} />}
+                {activeTab === 'treinos' && <AbaTreinos treinos={aluno.atribuicoes || []} />}
                 {activeTab === 'avaliacoes' && (
                     <div className="py-12 text-center border border-dashed border-white/10 rounded-2xl">
                         <p className="text-gray-500">Módulo de avaliações físicas em desenvolvimento.</p>
                     </div>
                 )}
                 {activeTab === 'financeiro' && (
-                    <div className="py-12 text-center border border-dashed border-white/10 rounded-2xl">
-                        <p className="text-gray-500">Módulo financeiro em desenvolvimento.</p>
-                    </div>
+                    <AbaFinanceiro 
+                        aluno={aluno} 
+                        planos={planos} 
+                        onUpdate={fetchData}
+                    />
                 )}
             </div>
         </div>
@@ -207,10 +240,10 @@ function AbaTreinos({ treinos }: { treinos: any[] }) {
                 </div>
                 <h3 className="text-lg font-bold text-white mb-2">Nenhum treino atribuído</h3>
                 <p className="text-sm text-gray-400 mb-6 max-w-sm">Este aluno ainda não possui nenhuma ficha de treino ativa no momento.</p>
-                <button className="flex items-center gap-2 bg-primary text-black px-5 py-2.5 rounded-lg font-bold hover:bg-primary/90 transition-colors">
+                <Link href={`/admin/alunos/${treinos[0]?.alunoId || 'novo'}/atribuir`} className="flex items-center gap-2 bg-primary text-black px-5 py-2.5 rounded-lg font-bold hover:bg-primary/90 transition-colors">
                     <Plus className="w-5 h-5" />
-                    Criar Primeiro Treino
-                </button>
+                    Atribuir Primeiro Treino
+                </Link>
             </div>
         );
     }
@@ -220,37 +253,135 @@ function AbaTreinos({ treinos }: { treinos: any[] }) {
             <div className="flex items-center justify-between">
                 <h2 className="text-lg font-bold text-white">Fichas Ativas</h2>
                 <Link
-                    href="/admin/treinos/novo"
+                    href={`/admin/alunos/${treinos[0]?.alunoId}/atribuir`}
                     className="flex items-center gap-2 bg-primary text-black px-4 py-2 rounded-lg font-bold hover:bg-primary/90 transition-colors text-sm"
                 >
                     <Plus className="w-4 h-4" />
-                    Nova Ficha
+                    Atribuir Treino
                 </Link>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {treinos.map((treino) => (
-                    <div key={treino.id} className="bg-[#111111] border border-white/5 p-5 rounded-2xl flex flex-col sm:flex-row justify-between gap-4">
+                {treinos.map((atribuicao) => (
+                    <div key={atribuicao.id} className="bg-[#111111] border border-white/5 p-5 rounded-2xl flex flex-col sm:flex-row justify-between gap-4">
                         <div>
-                            <h3 className="text-lg font-bold text-white mb-1">{treino.titulo}</h3>
-                            <p className="text-sm text-gray-400 mb-3">{treino.descricao}</p>
-                            <span className="inline-block bg-white/5 text-gray-300 text-xs font-semibold px-2.5 py-1 rounded-md">
-                                {treino.itens.length} Exercícios
-                            </span>
+                            <h3 className="text-lg font-bold text-white mb-1">{atribuicao.treino.nome}</h3>
+                            <p className="text-sm text-gray-400 mb-3">{atribuicao.treino.descricao || 'Sem descrição'}</p>
+                            <div className="flex gap-2">
+                                <span className="inline-block bg-white/5 text-gray-300 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded">
+                                    {atribuicao.treino.tipo}
+                                </span>
+                                <span className="inline-block bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded">
+                                    {atribuicao.ativo ? 'Ativo' : 'Pausado'}
+                                </span>
+                            </div>
                         </div>
 
                         <div className="flex sm:flex-col gap-2 justify-end">
-                            <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-white px-3 py-2 rounded-lg text-sm transition-colors transition-colors">
-                                <Pencil className="w-4 h-4" />
-                                Editar
-                            </button>
-                            <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 px-3 py-2 rounded-lg text-sm transition-colors transition-colors border border-transparent hover:border-red-500/30">
-                                <Trash2 className="w-4 h-4" />
-                                Excluir
-                            </button>
+                            <Link 
+                                href={`/admin/treinos/${atribuicao.treinoId}`}
+                                className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-white px-3 py-2 rounded-lg text-sm transition-colors"
+                            >
+                                <FileText className="w-4 h-4" />
+                                Ver Ficha
+                            </Link>
                         </div>
                     </div>
                 ))}
+            </div>
+        </div>
+    );
+}
+
+function AbaFinanceiro({ aluno, planos, onUpdate }: { aluno: any, planos: any[], onUpdate: () => void }) {
+    const [selectedPlano, setSelectedPlano] = useState(aluno.assinatura?.planoId || '');
+    const [isUpdating, setIsUpdating] = useState(false);
+
+    const handleUpdatePlano = async () => {
+        if (!selectedPlano) return;
+        
+        setIsUpdating(true);
+        try {
+            const res = await fetch(`/api/admin/users/${aluno.id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ planoId: selectedPlano })
+            });
+
+            if (res.ok) {
+                alert('Plano atualizado com sucesso!');
+                onUpdate();
+            } else {
+                alert('Erro ao atualizar plano.');
+            }
+        } catch (err) {
+            alert('Erro de conexão.');
+        } finally {
+            setIsUpdating(false);
+        }
+    };
+
+    return (
+        <div className="space-y-6">
+            <div className="bg-[#111111] border border-white/5 p-6 rounded-2xl">
+                <h3 className="text-lg font-bold text-white mb-6">Gestão de Assinatura</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-4">
+                        <label className="block text-sm font-medium text-gray-400">Plano Atual</label>
+                        <select 
+                            value={selectedPlano}
+                            onChange={(e) => setSelectedPlano(e.target.value)}
+                            className="w-full bg-black border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors"
+                        >
+                            <option value="">Selecione um plano</option>
+                            {planos.map(p => (
+                                <option key={p.id} value={p.id}>{p.name} - R$ {p.price.toFixed(2)}</option>
+                            ))}
+                        </select>
+                        <button 
+                            onClick={handleUpdatePlano}
+                            disabled={isUpdating || !selectedPlano || selectedPlano === aluno.assinatura?.planoId}
+                            className="w-full bg-primary text-black font-bold py-2.5 rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {isUpdating ? 'Atualizando...' : 'Salvar Alteração de Plano'}
+                        </button>
+                    </div>
+
+                    <div className="bg-white/5 p-5 rounded-xl border border-white/10 flex flex-col justify-center">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                                <Activity className="w-5 h-5 text-primary" />
+                            </div>
+                            <div>
+                                <h4 className="text-white font-bold">Status da Assinatura</h4>
+                                <p className="text-sm text-gray-400">{aluno.assinatura?.status || 'SEM PLANO'}</p>
+                            </div>
+                        </div>
+                        
+                        {aluno.assinatura && (
+                            <div className="space-y-2 text-sm">
+                                <div className="flex justify-between">
+                                    <span className="text-gray-400">Início:</span>
+                                    <span className="text-white">{new Date(aluno.assinatura.dataInicio).toLocaleDateString('pt-BR')}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="text-gray-400">Vencimento:</span>
+                                    <span className="text-white">
+                                        {aluno.assinatura.dataFim ? new Date(aluno.assinatura.dataFim).toLocaleDateString('pt-BR') : 'Indeterminado'}
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            <div className="bg-[#111111] border border-white/5 p-6 rounded-2xl">
+                <h3 className="text-lg font-bold text-white mb-4">Histórico de Pagamentos</h3>
+                <div className="text-center py-8 text-gray-500 border border-dashed border-white/5 rounded-xl">
+                    Nenhum pagamento registrado no sistema ainda.
+                </div>
             </div>
         </div>
     );
