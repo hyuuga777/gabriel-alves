@@ -16,7 +16,7 @@ const mockUsers = [
     },
     {
         id: 'mock-3', name: 'Roberto Costa', email: 'roberto@fitnesspro.com', role: 'ALUNO', avatar: 'https://ui-avatars.com/api/?name=Roberto+Costa&background=random',
-        atribuicoes: [{ treino: { nome: 'Hipertrofia C' } }], assinatura: { status: 'PENDENTE' },
+        atribuicoes: [{ treino: { nome: 'Hipertrofia C' } }], assinatura: { status: 'SUSPENSA' },
         treinoLogs: []
     },
     {

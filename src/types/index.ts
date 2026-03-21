@@ -36,7 +36,7 @@ export interface Treino {
 
 export interface AssinaturaStatus {
     plano: 'Mensal' | 'Trimestral' | 'Anual';
-    status: 'ATIVA' | 'PENDENTE' | 'CANCELADA' | 'EXPIRADA';
+    status: 'ATIVA' | 'SUSPENSA' | 'CANCELADA' | 'EXPIRADA';
     proximaCobranca: string; // ISO Date
 }
 

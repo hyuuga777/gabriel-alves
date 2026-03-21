@@ -20,7 +20,7 @@ const MOCK_USERS = [
         role: "ALUNO",
         avatar: "https://ui-avatars.com/api/?name=Ana+Pereira&background=random",
         atribuicoes: [{ treinoId: "mock-treino-2", treino: { nome: "Perda de Peso" } }],
-        assinatura: { status: "PENDENTE", plano: { nome: "Básico" } },
+        assinatura: { status: "SUSPENSA", plano: { nome: "Básico" } },
         treinoLogs: []
     },
     {

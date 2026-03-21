@@ -135,7 +135,7 @@ export async function GET() {
             {
                 nome: 'Roberto Costa',
                 email: 'roberto@fitnesspro.com',
-                status: 'PENDENTE',
+                status: 'ATIVA',
                 plano: 'Plano Anual',
                 activityPatterns: [6]
             },
