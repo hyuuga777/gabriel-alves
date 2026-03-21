@@ -1,11 +1,10 @@
-﻿import { Usuario, Treino, AssinaturaStatus, PontoEvolucao, LogExecucao } from '@/types';
+import { Usuario, Treino, AssinaturaStatus, PontoEvolucao, LogExecucao } from '@/types';
 
 export const MOCK_ALUNO: Usuario = {
     id: 'aluno-12345',
-    nome: 'Carlos Silva',
+    nome: 'Leo Cruz',
     email: 'carlos.silva@email.com',
-    role: 'ALUNO',
-    avatarUrl: 'https://i.pravatar.cc/150?u=carlos.silva@email.com'
+    role: 'ALUNO'
 };
 
 export const MOCK_ASSINATURA: AssinaturaStatus = {

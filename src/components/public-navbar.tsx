@@ -36,10 +36,7 @@ export function PublicNavbar() {
             <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2 group">
-                    <div className="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
-                        <Dumbbell className="w-6 h-6 text-primary" />
-                    </div>
-                    <span className="font-bold text-xl tracking-tight">FitnessPro</span>
+                    <img src="/logo.png" alt="FitnessPro" className="h-[42px] w-auto" />
                 </Link>
 
                 {/* Desktop Nav */}

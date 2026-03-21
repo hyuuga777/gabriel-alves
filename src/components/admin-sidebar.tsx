@@ -14,7 +14,8 @@ import {
     Ghost,
     Target,
     DollarSign,
-    CreditCard
+    CreditCard,
+    User
 } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
@@ -82,17 +83,11 @@ export function AdminSidebar() {
             {/* User Profile */}
             <div className="p-4 border-t border-white/5">
                 <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-colors cursor-pointer group">
-                    <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden border border-white/10">
-                        {session?.user?.image ? (
-                            <img src={session.user.image} alt="User" className="w-full h-full object-cover" />
-                        ) : (
-                            <span className="text-sm font-bold text-gray-400">
-                                {session?.user?.name?.substring(0, 2).toUpperCase() || 'AD'}
-                            </span>
-                        )}
+                    <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center overflow-hidden border border-white/10">
+                        <User className="w-5 h-5 text-gray-400" />
                     </div>
                     <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-white truncate">{session?.user?.name || 'Admin'}</p>
+                        <p className="text-sm font-medium text-white truncate">{session?.user?.name || 'Leo Cruz'}</p>
                         <p className="text-xs text-gray-500 truncate">{session?.user?.email}</p>
                     </div>
                     <button

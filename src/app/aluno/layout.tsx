@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 import { Home, Dumbbell, MessageCircle, CreditCard, User, LogOut } from 'lucide-react';
 
 export default function StudentLayout({ children }: { children: React.ReactNode }) {
@@ -20,7 +21,7 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
             {/* Desktop Sidebar (visible on lg+) */}
             <aside className="hidden lg:flex flex-col w-64 border-r border-white/10 bg-[#111] h-screen sticky top-0">
                 <div className="p-6 border-b border-white/10">
-                    <h1 className="font-bold text-xl tracking-tighter text-primary">FITNESS PRO</h1>
+                    <img src="/logo.png" alt="Logo" className="h-8 w-auto object-contain" />
                 </div>
 
                 <nav className="flex-1 p-4 space-y-2">
@@ -43,7 +44,7 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
                 </nav>
 
                 <div className="p-4 border-t border-white/10">
-                    <button className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-red-400 w-full transition-colors">
+                    <button onClick={() => signOut({ callbackUrl: '/login' })} className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-red-400 w-full transition-colors">
                         <LogOut className="w-5 h-5" />
                         Sair
                     </button>

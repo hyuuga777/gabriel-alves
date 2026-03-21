@@ -55,8 +55,7 @@ export default function LoginPage() {
             >
                 {/* Logo */}
                 <Link href="/" className="flex items-center justify-center gap-2 mb-8">
-                    <Dumbbell className="w-8 h-8 text-primary" />
-                    <span className="text-2xl font-bold gradient-text">FitnessPro</span>
+                    <img src="/logo.png" alt="FitnessPro" className="h-12 w-auto" />
                 </Link>
 
                 {/* Form Card */}
