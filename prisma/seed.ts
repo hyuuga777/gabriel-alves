@@ -5,13 +5,20 @@ const prisma = new PrismaClient();
 
 async function main() {
     // 1. Clean up
+    await prisma.mensagem.deleteMany();
+    await prisma.notificacao.deleteMany();
     await prisma.exercicioLog.deleteMany();
     await prisma.treinoLog.deleteMany();
     await prisma.atribuicaoTreino.deleteMany();
     await prisma.exercicioTreino.deleteMany();
     await prisma.treino.deleteMany();
     await prisma.exercicio.deleteMany();
+    await prisma.fotoAvaliacao.deleteMany();
+    await prisma.avaliacao.deleteMany();
     await prisma.alunoProfile.deleteMany();
+    await prisma.pagamento.deleteMany();
+    await prisma.assinatura.deleteMany();
+    await prisma.plano.deleteMany();
     await prisma.user.deleteMany();
 
     console.log('🧹 Banco de dados limpo.');
@@ -21,15 +28,28 @@ async function main() {
     // 2. Admin
     const admin = await prisma.user.create({
         data: {
-            email: 'admin@fitnesspro.com',
-            name: 'Treinador Principal',
-            password,
+            email: 'admin@gabrielalves.com',
+            name: 'Renato Silva',
+            password: await hash('Senha123@', 12),
             role: 'ADMIN',
-            avatar: 'https://ui-avatars.com/api/?name=Treinador&background=10b981&color=fff'
+            avatar: 'https://ui-avatars.com/api/?name=Renato+Silva&background=10b981&color=fff'
         }
     });
 
-    console.log('👮 Admin criado.');
+    console.log('👮 Renato Silva (Admin) criado.');
+
+    // 2.1 Usuário Regular
+    const user = await prisma.user.create({
+        data: {
+            email: 'usuario@gabrielalves.com',
+            name: 'Lucas Santos',
+            password: await hash('Lucas456#', 12),
+            role: 'ALUNO',
+            avatar: 'https://ui-avatars.com/api/?name=Lucas+Santos&background=3b82f6&color=fff'
+        }
+    });
+
+    console.log('👤 Lucas Santos (Usuário) criado.');
 
     // 3. Exercícios
     const exerciciosData = [
@@ -125,49 +145,57 @@ async function main() {
     const alunosData = [
         {
             nome: 'Carlos Silva',
-            email: 'carlos@fitnesspro.com',
+            email: 'carlos@gabrielalves.com',
             status: 'ATIVA',
             plano: 'Plano Trimestral',
             activityPatterns: [0, 1, 2, 4, 6] // Dias atrás que treinou (0 = hoje)
         },
         {
             nome: 'Ana Pereira',
-            email: 'ana@fitnesspro.com',
+            email: 'ana@gabrielalves.com',
             status: 'ATIVA',
             plano: 'Plano Mensal',
             activityPatterns: [1, 3, 5]
         },
         {
+            nome: 'Cliente Especial',
+            email: 'cliente@ogabrielalves.app',
+            status: 'ATIVA',
+            plano: 'Plano Anual',
+            activityPatterns: [0, 1, 2],
+            password: await hash('1234567', 12)
+        },
+        {
             nome: 'Roberto Costa',
-            email: 'roberto@fitnesspro.com',
+            email: 'roberto@gabrielalves.com',
             status: 'ATIVA',
             plano: 'Plano Anual',
             activityPatterns: [6]
         },
         {
             nome: 'Julia Santos',
-            email: 'julia@fitnesspro.com',
+            email: 'julia@gabrielalves.com',
             status: 'ATIVA',
             plano: 'Plano Semestral',
             activityPatterns: [0, 1, 2, 3, 4, 5, 6] // Hardcore
         },
         {
             nome: 'Pedro Oliveira',
-            email: 'pedro@fitnesspro.com',
+            email: 'pedro@gabrielalves.com',
             status: 'EXPIRADA',
             plano: 'Plano Mensal',
             activityPatterns: []
         },
         {
             nome: 'Mariana Lima',
-            email: 'mariana@fitnesspro.com',
+            email: 'mariana@gabrielalves.com',
             status: 'ATIVA',
             plano: 'Plano Trimestral',
             activityPatterns: [0, 2, 4]
         },
         {
             nome: 'Lucas Mendes',
-            email: 'lucas@fitnesspro.com',
+            email: 'lucas@gabrielalves.com',
             status: 'SUSPENSA',
             plano: 'Plano Anual',
             activityPatterns: [5, 6]
@@ -189,7 +217,7 @@ async function main() {
             data: {
                 name: a.nome,
                 email: a.email,
-                password,
+                password: (a as any).password || password,
                 role: 'ALUNO',
                 avatar: `https://ui-avatars.com/api/?name=${a.nome.replace(' ', '+')}&background=random`,
                 alunoProfile: {

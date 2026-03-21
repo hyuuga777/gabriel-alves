@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState } from 'react';
 import { PublicNavbar } from '@/components/public-navbar';
@@ -55,7 +55,7 @@ export default function AssinarPage() {
                 'Avaliação com bioimpedância presencial (1x/ano)',
                 'Ajustes semanais ilimitados',
                 'Masterclass exclusiva mensal',
-                'Kit boas-vindas FitnessPro',
+                'Kit boas-vindas Team Alves',
             ],
             highlight: false,
             badge: 'MELHOR VALOR',
@@ -168,7 +168,7 @@ export default function AssinarPage() {
                 <section className="py-20 px-6 bg-secondary/30">
                     <div className="max-w-7xl mx-auto">
                         <div className="text-center mb-16">
-                            <h2 className="text-3xl font-bold mb-4">Por que escolher a FitnessPro?</h2>
+                            <h2 className="text-3xl font-bold mb-4">Por que escolher o Team Alves?</h2>
                             <p className="text-muted-foreground">Não é apenas um app, é um ecossistema de performance.</p>
                         </div>
 

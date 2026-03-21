@@ -36,7 +36,7 @@ export function PublicNavbar() {
             <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2 group">
-                    <img src="/logo.png" alt="FitnessPro" className="h-[71px] w-auto object-contain" />
+                    <img src="https://ogabrielalves.com/logo.png" alt="Team Alves" className="h-[43px] w-auto object-contain" />
                 </Link>
 
                 {/* Desktop Nav */}

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { PublicNavbar } from '@/components/public-navbar';
 import { Footer } from '@/components/footer';
@@ -50,7 +50,7 @@ export default function ContatoPage() {
                                 <div>
                                     <h3 className="font-bold text-lg">Email</h3>
                                     <p className="text-muted-foreground mb-1">Para parcerias e suporte</p>
-                                    <a href="mailto:contato@fitnesspro.com" className="text-accent font-medium hover:underline">contato@fitnesspro.com</a>
+                                    <a href="mailto:contato@gabrielalves.com.br" className="text-accent font-medium hover:underline">contato@gabrielalves.com.br</a>
                                 </div>
                             </motion.div>
 

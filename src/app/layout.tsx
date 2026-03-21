@@ -7,8 +7,11 @@ import { Providers } from "./providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "FitnessPro - Assessoria Esportiva de Alta Performance",
+  title: "Team Alves - Assessoria Esportiva",
   description: "Plataforma completa de assessoria esportiva com treinos personalizados, avaliação física profissional e acompanhamento em tempo real.",
+  icons: {
+    icon: 'https://ogabrielalves.com/favicon.png',
+  },
 };
 
 export default function RootLayout({

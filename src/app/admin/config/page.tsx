@@ -9,7 +9,7 @@ export default function ConfigPage() {
     // Mock State
     const [profile, setProfile] = useState({
         name: 'Treinador Admin',
-        email: 'admin@fitnesspro.com',
+        email: 'contato@gabrielalves.com.br',
         language: 'pt-BR',
         notifications: true
     });

@@ -2,7 +2,7 @@ import { Usuario, Treino, AssinaturaStatus, PontoEvolucao, LogExecucao } from '@
 
 export const MOCK_ALUNO: Usuario = {
     id: 'aluno-12345',
-    nome: 'Leo Cruz',
+    nome: 'Lucas Santos',
     email: 'carlos.silva@email.com',
     role: 'ALUNO'
 };

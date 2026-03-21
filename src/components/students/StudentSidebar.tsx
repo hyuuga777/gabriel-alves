@@ -32,11 +32,11 @@ export function StudentSidebar() {
       <div className="p-8 pb-10">
         <Link href="/aluno/dashboard" className="block group">
           <Image
-            src="/logo.png"
+            src="https://ogabrielalves.com/logo.png"
             alt="Logo"
             width={160}
             height={48}
-            className="h-[68px] w-auto object-contain group-hover:scale-105 transition-transform duration-300"
+            className="h-[43px] w-auto object-contain group-hover:scale-105 transition-transform duration-300"
             priority
           />
         </Link>
@@ -104,9 +104,9 @@ export function StudentSidebar() {
               <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-[#050505] rounded-full" />
             </div>
             <div className="overflow-hidden">
-              <p className="text-sm font-bold text-white truncate">{MOCK_ALUNO.nome}</p>
+              <p className="text-sm font-bold text-white truncate">Gabriel Alves</p>
               <p className="text-[10px] text-teal-400 font-black uppercase tracking-tighter">
-                Premium Member
+                Aluno VIP
               </p>
             </div>
           </div>

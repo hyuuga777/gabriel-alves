@@ -11,7 +11,7 @@ export function Footer() {
                     {/* Brand */}
                     <div className="space-y-4">
                         <Link href="/" className="flex items-center gap-2">
-                            <img src="/logo.png" alt="FitnessPro" className="h-[54px] w-auto object-contain grayscale opacity-80 hover:grayscale-0 hover:opacity-100 transition-all" />
+                            <img src="https://ogabrielalves.com/logo.png" alt="Team Alves" className="h-[54px] w-auto object-contain opacity-100 transition-all" />
                         </Link>
                         <p className="text-muted-foreground text-sm leading-relaxed">
                             Plataforma completa de assessoria esportiva para quem busca alta performance e resultados reais com embasamento científico.
@@ -57,7 +57,7 @@ export function Footer() {
                 </div>
 
                 <div className="border-t border-white/5 pt-8 text-center text-sm text-muted-foreground">
-                    <p>&copy; {new Date().getFullYear()} FitnessPro. Todos os direitos reservados.</p>
+                    <p>&copy; {new Date().getFullYear()} Team Alves. Todos os direitos reservados.</p>
                 </div>
             </div>
         </footer>

@@ -1,4 +1,4 @@
-# 💪 FitnessPro - Plataforma SaaS de Assessoria Esportiva
+# 💪 Team Alves - Plataforma SaaS de Assessoria Esportiva
 
 Plataforma completa de assessoria esportiva e consultoria fitness de alta performance com avaliação física profissional, treinos personalizados e acompanhamento em tempo real.
 
@@ -11,7 +11,7 @@ Plataforma completa de assessoria esportiva e consultoria fitness de alta perfor
 
 ## 🎯 Visão Geral
 
-**FitnessPro** é uma plataforma SaaS completa dividida em três pilares:
+**Team Alves** é uma plataforma SaaS completa dividida em três pilares:
 
 1. **Site Institucional** - Landing page de conversão premium
 2. **Área do Aluno** - Dashboard funcional com treinos e progresso
@@ -236,7 +236,7 @@ Ver: [FORMULAS_TEAM_ALVES.md](./FORMULAS_TEAM_ALVES.md)
 
 ## 📞 Suporte
 
-- **Email**: contato@fitnesspro.com
+- **Email**: contato@gabrielalves.com
 - **WhatsApp**: (11) 99999-9999
 
 ---

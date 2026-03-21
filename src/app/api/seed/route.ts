@@ -9,25 +9,30 @@ export async function GET() {
         console.log('🧹 Limpando banco de dados...');
 
         // 1. Clean up
+        await prisma.mensagem.deleteMany();
+        await prisma.notificacao.deleteMany();
         await prisma.exercicioLog.deleteMany();
         await prisma.treinoLog.deleteMany();
         await prisma.atribuicaoTreino.deleteMany();
         await prisma.exercicioTreino.deleteMany();
         await prisma.treino.deleteMany();
         await prisma.exercicio.deleteMany();
+        await prisma.fotoAvaliacao.deleteMany();
+        await prisma.avaliacao.deleteMany();
         await prisma.alunoProfile.deleteMany();
+        await prisma.pagamento.deleteMany();
+        await prisma.assinatura.deleteMany();
+        await prisma.plano.deleteMany();
         await prisma.user.deleteMany();
 
-        const password = await hash('123456', 12);
-
-        // 2. Admin
+        const password = await hash('123456', 12);        // 2. Admin
         const admin = await prisma.user.create({
             data: {
-                email: 'admin@fitnesspro.com',
-                name: 'Treinador Principal',
-                password,
+                email: 'admin@ogabrielalves.app',
+                name: 'Gabriel Alves',
+                password: await hash('Admin123#', 12),
                 role: 'ADMIN',
-                avatar: 'https://ui-avatars.com/api/?name=Treinador&background=10b981&color=fff'
+                avatar: 'https://ui-avatars.com/api/?name=Gabriel+Alves&background=10b981&color=fff'
             }
         });
 
@@ -38,10 +43,10 @@ export async function GET() {
             { nome: 'Crucifixo na Máquina', grupo: ['Peito'], video: '' },
             { nome: 'Puxada Alta Aberta', grupo: ['Costas'], video: '' },
             { nome: 'Remada Curvada', grupo: ['Costas', 'Bíceps'], video: '' },
-            { nome: 'Levantamento Terra', grupo: ['Costas', 'Posterior', 'Glsteos'], video: '' },
+            { nome: 'Levantamento Terra', grupo: ['Costas', 'Posterior', 'Glúteos'], video: '' },
             { nome: 'Desenvolvimento Militar', grupo: ['Ombros'], video: '' },
             { nome: 'Elevação Lateral', grupo: ['Ombros'], video: '' },
-            { nome: 'Agachamento Livre', grupo: ['Quadríceps', 'Glsteos'], video: '' },
+            { nome: 'Agachamento Livre', grupo: ['Quadríceps', 'Glúteos'], video: '' },
             { nome: 'Leg Press 45', grupo: ['Quadríceps'], video: '' },
             { nome: 'Cadeira Extensora', grupo: ['Quadríceps'], video: '' },
             { nome: 'Mesa Flexora', grupo: ['Posterior'], video: '' },
@@ -117,59 +122,67 @@ export async function GET() {
         });
 
         // 5. Alunos
-        const alunosData = [
+        const alumnosData = [
             {
                 nome: 'Carlos Silva',
-                email: 'carlos@fitnesspro.com',
+                email: 'carlos@ogabrielalves.app',
                 status: 'ATIVA',
                 plano: 'Plano Trimestral',
                 activityPatterns: [0, 1, 2, 4, 6]
             },
             {
                 nome: 'Ana Pereira',
-                email: 'ana@fitnesspro.com',
+                email: 'ana@ogabrielalves.app',
                 status: 'ATIVA',
                 plano: 'Plano Mensal',
                 activityPatterns: [1, 3, 5]
             },
             {
+                nome: 'Cliente Especial',
+                email: 'cliente@ogabrielalves.app',
+                status: 'ATIVA',
+                plano: 'Plano Anual',
+                activityPatterns: [0, 1, 2],
+                password: await hash('1234567', 12)
+            },
+            {
                 nome: 'Roberto Costa',
-                email: 'roberto@fitnesspro.com',
+                email: 'roberto@ogabrielalves.app',
                 status: 'ATIVA',
                 plano: 'Plano Anual',
                 activityPatterns: [6]
             },
             {
                 nome: 'Julia Santos',
-                email: 'julia@fitnesspro.com',
+                email: 'julia@ogabrielalves.app',
                 status: 'ATIVA',
                 plano: 'Plano Semestral',
                 activityPatterns: [0, 1, 2, 3, 4, 5, 6]
             },
             {
                 nome: 'Pedro Oliveira',
-                email: 'pedro@fitnesspro.com',
+                email: 'pedro@ogabrielalves.app',
                 status: 'EXPIRADA',
                 plano: 'Plano Mensal',
                 activityPatterns: []
             },
             {
                 nome: 'Mariana Lima',
-                email: 'mariana@fitnesspro.com',
+                email: 'mariana@ogabrielalves.app',
                 status: 'ATIVA',
                 plano: 'Plano Trimestral',
                 activityPatterns: [0, 2, 4]
             },
             {
                 nome: 'Lucas Mendes',
-                email: 'lucas@fitnesspro.com',
+                email: 'lucas@ogabrielalves.app',
                 status: 'SUSPENSA',
                 plano: 'Plano Anual',
                 activityPatterns: [5, 6]
             }
         ];
 
-        for (const [index, a] of alunosData.entries()) {
+        for (const [index, a] of alumnosData.entries()) {
             const treinoSelecionado = index % 3 === 0 ? treinoA : (index % 3 === 1 ? treinoB : treinoC);
             const logs = a.activityPatterns.map(daysAgo => ({
                 treinoNome: treinoSelecionado.nome,
@@ -182,7 +195,7 @@ export async function GET() {
                 data: {
                     name: a.nome,
                     email: a.email,
-                    password,
+                    password: (a as any).password || password,
                     role: 'ALUNO',
                     avatar: `https://ui-avatars.com/api/?name=${a.nome.replace(' ', '+')}&background=random`,
                     alunoProfile: {
@@ -192,7 +205,7 @@ export async function GET() {
                             altura: 1.75,
                             pesoInicial: 70 + Math.random() * 20,
                             nivelAtividade: 'Intermediário',
-                            objetivos: ['Hipertrofia', 'Ganho de forca']
+                            objetivos: ['Hipertrofia', 'Ganho de força']
                         }
                     },
                     atribuicoes: {
@@ -222,9 +235,10 @@ export async function GET() {
             });
         }
 
-        return NextResponse.json({ message: 'Database seeded successfully', count: alunosData.length });
+        return NextResponse.json({ message: 'Database seeded successfully', count: alumnosData.length });
     } catch (error) {
         console.error('Seed error:', error);
         return NextResponse.json({ error: 'Failed to seed database', details: String(error) }, { status: 500 });
     }
 }
+

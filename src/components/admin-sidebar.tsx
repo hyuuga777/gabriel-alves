@@ -41,11 +41,8 @@ export function AdminSidebar() {
     return (
         <aside className="w-64 bg-[#0a0a0a] border-r border-white/5 flex flex-col h-screen fixed left-0 top-0 z-50">
             {/* Logo */}
-            <div className="p-6 flex items-center gap-2">
-                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                    <Ghost className="w-5 h-5 text-black" />
-                </div>
-                <span className="font-bold text-xl tracking-tight">Fitness<span className="text-primary">Pro</span></span>
+            <div className="p-6">
+                <img src="https://ogabrielalves.com/logo.png" alt="Team Alves" className="h-[43px] w-auto object-contain" />
             </div>
 
             {/* Search */}
@@ -87,7 +84,7 @@ export function AdminSidebar() {
                         <User className="w-5 h-5 text-gray-400" />
                     </div>
                     <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-white truncate">{session?.user?.name || 'Leo Cruz'}</p>
+                        <p className="text-sm font-medium text-white truncate">{session?.user?.name || 'Gabriel Alves'}</p>
                         <p className="text-xs text-gray-500 truncate">{session?.user?.email}</p>
                     </div>
                     <button

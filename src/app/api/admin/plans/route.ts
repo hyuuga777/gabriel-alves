@@ -1,44 +1,65 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
-
-const dataFilePath = path.join(process.cwd(), 'plans.json');
-
-// Helper to read data
-function getPlans() {
-    if (!fs.existsSync(dataFilePath)) {
-        return [];
-    }
-    const fileContent = fs.readFileSync(dataFilePath, 'utf8');
-    try {
-        return JSON.parse(fileContent);
-    } catch (e) {
-        return [];
-    }
-}
-
-// Helper to write data
-function savePlans(plans: any[]) {
-    fs.writeFileSync(dataFilePath, JSON.stringify(plans, null, 2));
-}
+import { prisma } from '@/lib/prisma';
 
 export async function GET() {
-    const plans = getPlans();
-    return NextResponse.json(plans);
+    try {
+        const planos = await prisma.plano.findMany({
+            orderBy: { createdAt: 'asc' }
+        });
+        
+        const plans = planos.map(p => ({
+            id: p.id,
+            name: p.nome,
+            price: p.preco.toString(),
+            period: p.intervalo,
+            features: p.recursos,
+            highlight: p.destaque,
+            highlightText: p.textoDestaque,
+            discount: p.desconto,
+            gradient: p.gradiente
+        }));
+
+        return NextResponse.json(plans);
+    } catch (error) {
+        console.error('Error fetching plans:', error);
+        return NextResponse.json({ error: 'Failed to fetch plans' }, { status: 500 });
+    }
 }
 
 export async function POST(request: Request) {
-    const body = await request.json();
-    const plans = getPlans();
+    try {
+        const body = await request.json();
+        
+        const newPlano = await prisma.plano.create({
+            data: {
+                nome: body.name,
+                preco: parseFloat(body.price.replace(',', '.')),
+                intervalo: body.period || 'mês',
+                recursos: body.features || [],
+                destaque: body.highlight || false,
+                textoDestaque: body.highlightText || null,
+                desconto: body.discount || null,
+                gradiente: body.gradient || false,
+                ativo: true,
+                descricao: ''
+            }
+        });
 
-    const newPlan = {
-        ...body,
-        id: Date.now(), // Simple ID generation
-        features: body.features || [],
-    };
+        const newPlan = {
+            id: newPlano.id,
+            name: newPlano.nome,
+            price: newPlano.preco.toString(),
+            period: newPlano.intervalo,
+            features: newPlano.recursos,
+            highlight: newPlano.destaque,
+            highlightText: newPlano.textoDestaque,
+            discount: newPlano.desconto,
+            gradient: newPlano.gradiente
+        };
 
-    plans.push(newPlan);
-    savePlans(plans);
-
-    return NextResponse.json(newPlan);
+        return NextResponse.json(newPlan);
+    } catch (error) {
+        console.error('Error creating plan:', error);
+        return NextResponse.json({ error: 'Failed to create plan' }, { status: 500 });
+    }
 }

@@ -75,6 +75,10 @@ body {
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
 }
 
+.gradient-accent {
+  background: linear-gradient(135deg, var(--color-accent) 0%, #00e5e5 100%);
+}
+
 .gradient-text {
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
   -webkit-background-clip: text;

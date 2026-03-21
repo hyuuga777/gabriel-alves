@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Check, Edit2, Trash2, X, Save } from 'lucide-react';
 
 interface Plan {
-    id: number;
+    id: string;
     name: string;
     price: string;
     period: string;
@@ -53,7 +53,7 @@ export default function AdminPlansPage() {
         setIsModalOpen(true);
     };
 
-    const handleDelete = async (id: number) => {
+    const handleDelete = async (id: string) => {
         if (window.confirm('Tem certeza que deseja excluir este plano?')) {
             try {
                 await fetch(`/api/admin/plans/${id}`, { method: 'DELETE' });

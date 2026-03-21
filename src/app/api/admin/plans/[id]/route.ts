@@ -1,50 +1,49 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
-
-const dataFilePath = path.join(process.cwd(), 'plans.json');
-
-function getPlans() {
-    if (!fs.existsSync(dataFilePath)) {
-        return [];
-    }
-    const fileContent = fs.readFileSync(dataFilePath, 'utf8');
-    try {
-        return JSON.parse(fileContent);
-    } catch (e) {
-        return [];
-    }
-}
-
-function savePlans(plans: any[]) {
-    fs.writeFileSync(dataFilePath, JSON.stringify(plans, null, 2));
-}
+import { prisma } from '@/lib/prisma';
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
-    const { id: rawId } = await params;
-    const id = parseInt(rawId);
-    const body = await request.json();
-    const plans = getPlans();
+    try {
+        const { id } = await params;
+        const body = await request.json();
 
-    const index = plans.findIndex((p: any) => p.id === id);
-    if (index === -1) {
-        return NextResponse.json({ error: 'Plan not found' }, { status: 404 });
+        const updatedPlano = await prisma.plano.update({
+            where: { id },
+            data: {
+                nome: body.name,
+                preco: parseFloat(body.price.toString().replace(',', '.')),
+                intervalo: body.period,
+                recursos: body.features,
+                destaque: body.highlight,
+                textoDestaque: body.highlightText || null,
+                desconto: body.discount || null,
+                gradiente: body.gradient
+            }
+        });
+
+        return NextResponse.json({
+            id: updatedPlano.id,
+            name: updatedPlano.nome,
+            price: updatedPlano.preco.toString(),
+            period: updatedPlano.intervalo,
+            features: updatedPlano.recursos,
+            highlight: updatedPlano.destaque,
+            highlightText: updatedPlano.textoDestaque,
+            discount: updatedPlano.desconto,
+            gradient: updatedPlano.gradiente
+        });
+    } catch (error) {
+        console.error('Error updating plan:', error);
+        return NextResponse.json({ error: 'Failed to update plan' }, { status: 500 });
     }
-
-    // Update plan
-    plans[index] = { ...plans[index], ...body, id }; // Ensure ID doesn't change
-    savePlans(plans);
-
-    return NextResponse.json(plans[index]);
 }
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
-    const { id: rawId } = await params;
-    const id = parseInt(rawId);
-    let plans = getPlans();
-
-    plans = plans.filter((p: any) => p.id !== id);
-    savePlans(plans);
-
-    return NextResponse.json({ success: true });
+    try {
+        const { id } = await params;
+        await prisma.plano.delete({ where: { id } });
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error('Error deleting plan:', error);
+        return NextResponse.json({ error: 'Failed to delete plan' }, { status: 500 });
+    }
 }

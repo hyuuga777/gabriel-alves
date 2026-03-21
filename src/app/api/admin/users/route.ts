@@ -5,37 +5,37 @@ import bcrypt from "bcryptjs";
 
 const mockUsers = [
     {
-        id: 'mock-1', name: 'Carlos Silva', email: 'carlos@fitnesspro.com', role: 'ALUNO', avatar: 'https://ui-avatars.com/api/?name=Carlos+Silva&background=random',
+        id: 'mock-1', name: 'Carlos Silva', email: 'carlos@gabrielalves.com', role: 'ALUNO', avatar: 'https://ui-avatars.com/api/?name=Carlos+Silva&background=random',
         atribuicoes: [{ treino: { nome: 'Hipertrofia A' } }], assinatura: { status: 'ATIVA' },
         treinoLogs: [{ createdAt: new Date().toISOString() }, { createdAt: new Date(Date.now() - 86400000).toISOString() }]
     },
     {
-        id: 'mock-2', name: 'Ana Pereira', email: 'ana@fitnesspro.com', role: 'ALUNO', avatar: 'https://ui-avatars.com/api/?name=Ana+Pereira&background=random',
+        id: 'mock-2', name: 'Ana Pereira', email: 'ana@gabrielalves.com', role: 'ALUNO', avatar: 'https://ui-avatars.com/api/?name=Ana+Pereira&background=random',
         atribuicoes: [{ treino: { nome: 'Hipertrofia B' } }], assinatura: { status: 'ATIVA' },
         treinoLogs: [{ createdAt: new Date(Date.now() - 172800000).toISOString() }]
     },
     {
-        id: 'mock-3', name: 'Roberto Costa', email: 'roberto@fitnesspro.com', role: 'ALUNO', avatar: 'https://ui-avatars.com/api/?name=Roberto+Costa&background=random',
+        id: 'mock-3', name: 'Roberto Costa', email: 'roberto@gabrielalves.com', role: 'ALUNO', avatar: 'https://ui-avatars.com/api/?name=Roberto+Costa&background=random',
         atribuicoes: [{ treino: { nome: 'Hipertrofia C' } }], assinatura: { status: 'SUSPENSA' },
         treinoLogs: []
     },
     {
-        id: 'mock-4', name: 'Julia Santos', email: 'julia@fitnesspro.com', role: 'ALUNO', avatar: 'https://ui-avatars.com/api/?name=Julia+Santos&background=random',
+        id: 'mock-4', name: 'Julia Santos', email: 'julia@gabrielalves.com', role: 'ALUNO', avatar: 'https://ui-avatars.com/api/?name=Julia+Santos&background=random',
         atribuicoes: [{ treino: { nome: 'Hipertrofia A' } }], assinatura: { status: 'ATIVA' },
         treinoLogs: Array(5).fill({ createdAt: new Date().toISOString() })
     },
     {
-        id: 'mock-5', name: 'Pedro Oliveira', email: 'pedro@fitnesspro.com', role: 'ALUNO', avatar: 'https://ui-avatars.com/api/?name=Pedro+Oliveira&background=random',
+        id: 'mock-5', name: 'Pedro Oliveira', email: 'pedro@gabrielalves.com', role: 'ALUNO', avatar: 'https://ui-avatars.com/api/?name=Pedro+Oliveira&background=random',
         atribuicoes: [], assinatura: { status: 'EXPIRADA' },
         treinoLogs: []
     },
     {
-        id: 'mock-6', name: 'Mariana Lima', email: 'mariana@fitnesspro.com', role: 'ALUNO', avatar: 'https://ui-avatars.com/api/?name=Mariana+Lima&background=random',
+        id: 'mock-6', name: 'Mariana Lima', email: 'mariana@gabrielalves.com', role: 'ALUNO', avatar: 'https://ui-avatars.com/api/?name=Mariana+Lima&background=random',
         atribuicoes: [{ treino: { nome: 'Hipertrofia B' } }], assinatura: { status: 'ATIVA' },
         treinoLogs: [{ createdAt: new Date().toISOString() }]
     },
     {
-        id: 'mock-7', name: 'Lucas Mendes', email: 'lucas@fitnesspro.com', role: 'ALUNO', avatar: 'https://ui-avatars.com/api/?name=Lucas+Mendes&background=random',
+        id: 'mock-7', name: 'Lucas Mendes', email: 'lucas@gabrielalves.com', role: 'ALUNO', avatar: 'https://ui-avatars.com/api/?name=Lucas+Mendes&background=random',
         atribuicoes: [{ treino: { nome: 'Hipertrofia C' } }], assinatura: { status: 'SUSPENSA' },
         treinoLogs: []
     }

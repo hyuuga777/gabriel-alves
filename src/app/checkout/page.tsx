@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useSearchParams } from 'next/navigation';
 import { PublicNavbar } from '@/components/public-navbar';
@@ -9,15 +9,17 @@ import { Suspense } from 'react';
 
 function CheckoutContent() {
     const searchParams = useSearchParams();
-    const planId = searchParams.get('plan') || 'monthly';
+    const planId = searchParams.get('plan') || 'basic-mensal';
+    const treinadorId = searchParams.get('treinadorId');
 
     const planDetails: Record<string, { name: string; price: number; period: string }> = {
-        monthly: { name: 'Plano Mensal', price: 129.90, period: 'mês' },
-        quarterly: { name: 'Plano Trimestral', price: 109.90, period: 'mês (x3)' },
-        annual: { name: 'Plano Anual', price: 89.90, period: 'mês (x12)' },
+        'basic-mensal': { name: 'Plano Basic Mensal', price: 359.00, period: 'mês' },
+        'basic-semestral': { name: 'Plano Basic Semestral', price: 2010.00, period: 'semestre (equivalente a R$ 335,00/mês)' },
+        'ultra-mensal': { name: 'Plano Ultra Mensal', price: 432.00, period: 'mês' },
+        'ultra-semestral': { name: 'Plano Ultra Semestral', price: 2228.00, period: 'semestre (equivalente a R$ 380,00/mês)' },
     };
 
-    const selectedPlan = planDetails[planId] || planDetails.monthly;
+    const selectedPlan = planDetails[planId] || planDetails['basic-mensal'];
 
     return (
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-12">
@@ -29,6 +31,7 @@ function CheckoutContent() {
                         <span className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm">1</span>
                         Dados Pessoais
                     </h2>
+                    {treinadorId && <input type="hidden" name="treinadorId" value={treinadorId} />}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <label className="text-sm font-medium">Nome Completo</label>
