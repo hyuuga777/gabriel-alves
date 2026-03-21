@@ -1,5 +1,6 @@
-﻿'use client';
+'use client';
 
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   Users,
@@ -21,80 +22,25 @@ import {
   CartesianGrid,
 } from 'recharts';
 
-// ── Dados mock (serão substituídos por fetch real) ──────────────────────────
-const REVENUE_DATA = [
-  { mes: 'Jul', receita: 3200 },
-  { mes: 'Ago', receita: 3800 },
-  { mes: 'Set', receita: 2900 },
-  { mes: 'Out', receita: 4100 },
-  { mes: 'Nov', receita: 4800 },
-  { mes: 'Dez', receita: 4250 },
-];
-
-const KPI = [
-  {
-    label: 'Alunos Ativos',
-    value: '42',
-    icon: Users,
-    accent: '#7c3aed',
-    accentBg: 'rgba(124,58,237,0.12)',
-    trend: '+3 este mês',
-    trendUp: true,
-  },
-  {
-    label: 'Faturamento Mensal',
-    value: 'R$ 4.250',
-    icon: DollarSign,
-    accent: '#10b981',
-    accentBg: 'rgba(16,185,129,0.12)',
-    trend: '+12% vs mês anterior',
-    trendUp: true,
-  },
-  {
-    label: 'Inadimplentes',
-    value: '3',
-    icon: AlertTriangle,
-    accent: '#ef4444',
-    accentBg: 'rgba(239,68,68,0.12)',
-    trend: 'Atenção requerida',
-    trendUp: false,
-  },
-];
-
-const ATIVIDADES = [
-  {
-    id: 1,
-    texto: 'João finalizou o Treino A',
-    tempo: 'há 10 min',
-    Icon: CheckCircle2,
-    cor: '#10b981',
-    bg: 'rgba(16,185,129,0.12)',
-  },
-  {
-    id: 2,
-    texto: 'Maria renovou o plano Trimestral',
-    tempo: 'há 2 horas',
-    Icon: RotateCw,
-    cor: '#7c3aed',
-    bg: 'rgba(124,58,237,0.12)',
-  },
-  {
-    id: 3,
-    texto: 'Pedro tem avaliação pendente',
-    tempo: 'há 5 horas',
-    Icon: AlertTriangle,
-    cor: '#f59e0b',
-    bg: 'rgba(245,158,11,0.12)',
-  },
-  {
-    id: 4,
-    texto: 'Ana iniciou plano Mensal',
-    tempo: 'ontem',
-    Icon: TrendingUp,
-    cor: '#3b82f6',
-    bg: 'rgba(59,130,246,0.12)',
-  },
-];
+// ── Types ──────────────────────────────────────────────────────────
+interface DashboardStats {
+  kpis: {
+    activeStudents: number;
+    totalRevenue: number;
+    pendingAssessments: number;
+    latePayments: number;
+  };
+  revenueChart: Array<{ name: string; value: number }>;
+  activities: Array<{
+    id: string;
+    type: string;
+    user: string;
+    avatar: string | null;
+    description: string;
+    time: string;
+    status: string;
+  }>;
+}
 
 // ── Variantes de animação ──────────────────────────────────────────────────
 const container = {
@@ -121,6 +67,75 @@ function CustomTooltip({ active, payload, label }: any) {
 
 // ── Componente principal ───────────────────────────────────────────────────
 export default function AdminDashboard() {
+  const [data, setData] = useState<DashboardStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const res = await fetch('/api/admin/dashboard/stats');
+        if (!res.ok) throw new Error('Falha ao buscar dados');
+        const stats = await res.json();
+        setData(stats);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchStats();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="space-y-8 p-12 flex flex-col items-center justify-center min-h-[400px]">
+        <RotateCw className="w-8 h-8 text-violet-500 animate-spin" />
+        <p className="text-gray-400 text-sm mt-4">Carregando painel administrativo...</p>
+      </div>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <div className="space-y-8 p-12 text-center">
+        <AlertTriangle className="w-12 h-12 text-red-500 mx-auto" />
+        <h2 className="text-xl font-bold text-white mt-4">Erro ao carregar dados</h2>
+        <p className="text-gray-400 mt-2">{error || 'Tente recarregar a página.'}</p>
+      </div>
+    );
+  }
+
+  const KPI_CARDS = [
+    {
+      label: 'Alunos Ativos',
+      value: data.kpis.activeStudents.toString(),
+      icon: Users,
+      accent: '#7c3aed',
+      accentBg: 'rgba(124,58,237,0.12)',
+      trend: '+0 este mês', // Você pode implementar lógica de tendência no futuro
+      trendUp: true,
+    },
+    {
+      label: 'Faturamento Total',
+      value: `R$ ${data.kpis.totalRevenue.toLocaleString('pt-BR')}`,
+      icon: DollarSign,
+      accent: '#10b981',
+      accentBg: 'rgba(16,185,129,0.12)',
+      trend: 'Total acumulado',
+      trendUp: true,
+    },
+    {
+      label: 'Pendentes/Atrasados',
+      value: (data.kpis.pendingAssessments + data.kpis.latePayments).toString(),
+      icon: AlertTriangle,
+      accent: '#ef4444',
+      accentBg: 'rgba(239,68,68,0.12)',
+      trend: `${data.kpis.latePayments} mensalidades`,
+      trendUp: false,
+    },
+  ];
+
   return (
     <motion.div
       variants={container}
@@ -140,7 +155,7 @@ export default function AdminDashboard() {
 
       {/* ── KPI Cards ── */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {KPI.map((kpi) => {
+        {KPI_CARDS.map((kpi) => {
           const Icon = kpi.icon;
           return (
             <motion.div
@@ -167,7 +182,7 @@ export default function AdminDashboard() {
                 <Icon className="w-5 h-5" style={{ color: kpi.accent }} />
               </div>
 
-              {/* Contesdo */}
+              {/* Conteúdo */}
               <div className="relative z-10">
                 <p className="text-xs text-gray-400 font-medium uppercase tracking-widest">
                   {kpi.label}
@@ -214,14 +229,11 @@ export default function AdminDashboard() {
                 Desempenho de novas assinaturas
               </p>
             </div>
-            <span className="text-xs bg-emerald-500/15 text-emerald-400 font-semibold px-2.5 py-1 rounded-full">
-              +12% ↑
-            </span>
           </div>
 
           <div className="flex-1 min-h-[220px]">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={REVENUE_DATA} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+              <AreaChart data={data.revenueChart} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="receitaGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#7c3aed" stopOpacity={0.35} />
@@ -230,7 +242,7 @@ export default function AdminDashboard() {
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
                 <XAxis
-                  dataKey="mes"
+                  dataKey="name"
                   tick={{ fill: '#6b7280', fontSize: 11 }}
                   axisLine={false}
                   tickLine={false}
@@ -244,7 +256,7 @@ export default function AdminDashboard() {
                 <Tooltip content={<CustomTooltip />} />
                 <Area
                   type="monotone"
-                  dataKey="receita"
+                  dataKey="value"
                   stroke="#7c3aed"
                   strokeWidth={2.5}
                   fill="url(#receitaGrad)"
@@ -274,36 +286,55 @@ export default function AdminDashboard() {
           </div>
 
           <div className="flex-1 space-y-1 overflow-y-auto pr-1">
-            {ATIVIDADES.map((a, idx) => {
-              const Icon = a.Icon;
-              const isLast = idx === ATIVIDADES.length - 1;
+            {data.activities.length === 0 ? (
+                <p className="text-center text-gray-500 text-sm py-12">Nenhuma atividade recente.</p>
+            ) : data.activities.map((a, idx) => {
+              const itemIsLast = idx === data.activities.length - 1;
+              
+              // Mapeamento de ícones e cores baseado no tipo
+              const getIconProps = (type: string) => {
+                switch(type) {
+                    case 'payment': return { Icon: DollarSign, cor: '#10b981', bg: 'rgba(16,185,129,0.12)' };
+                    case 'workout': return { Icon: CheckCircle2, cor: '#7c3aed', bg: 'rgba(124,58,237,0.12)' };
+                    case 'evaluation': return { Icon: TrendingUp, cor: '#3b82f6', bg: 'rgba(59,130,246,0.12)' };
+                    default: return { Icon: RotateCw, cor: '#6b7280', bg: 'rgba(255,255,255,0.05)' };
+                }
+              };
+
+              const { Icon, cor, bg } = getIconProps(a.type);
+              
+              const formatTime = (time: string) => {
+                const date = new Date(time);
+                return date.toLocaleString('pt-BR', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' });
+              };
+
               return (
                 <motion.div
                   key={a.id}
                   initial={{ opacity: 0, x: -8 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3 + idx * 0.08 }}
+                  transition={{ delay: 0.1 + idx * 0.05 }}
                   className="flex gap-3 relative"
                 >
                   {/* Linha de timeline */}
-                  {!isLast && (
+                  {!itemIsLast && (
                     <div className="absolute left-[18px] top-10 bottom-[-4px] w-px bg-white/6" />
                   )}
 
                   {/* Ícone */}
                   <div
                     className="shrink-0 mt-1 w-9 h-9 rounded-full flex items-center justify-center"
-                    style={{ backgroundColor: a.bg }}
+                    style={{ backgroundColor: bg }}
                   >
-                    <Icon className="w-4 h-4" style={{ color: a.cor }} />
+                    <Icon className="w-4 h-4" style={{ color: cor }} />
                   </div>
 
                   {/* Texto */}
                   <div className="pb-5">
                     <p className="text-sm text-gray-200 font-medium leading-snug">
-                      {a.texto}
+                      <span className="text-violet-400">{a.user}</span> {a.description}
                     </p>
-                    <p className="text-xs text-gray-500 mt-0.5">{a.tempo}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{formatTime(a.time)}</p>
                   </div>
                 </motion.div>
               );
