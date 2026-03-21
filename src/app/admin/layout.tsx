@@ -42,7 +42,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {/* Sidebar Desktop */}
             <aside className="hidden lg:flex flex-col w-64 fixed inset-y-0 left-0 bg-[#111111] border-r border-white/5 z-50">
                 <div className="h-16 flex items-center px-6 border-b border-white/5">
-                    <img src="/logo.png" alt="Logo" className="h-8 w-auto object-contain" />
+                    <img src="/logo.png" alt="Logo" className="h-14 w-auto object-contain" />
                 </div>
 
                 <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-1">
@@ -66,7 +66,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </nav>
 
                 <div className="p-4 border-t border-white/5">
-                    <button onClick={() => signOut({ callbackUrl: '/login' })} className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-400 hover:text-red-400 transition-colors w-full rounded-lg hover:bg-red-500/10">
+                    <button onClick={() => signOut({ callbackUrl: '/' })} className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-400 hover:text-red-400 transition-colors w-full rounded-lg hover:bg-red-500/10">
                         <LogOut className="w-5 h-5" />
                         Sair do Painel
                     </button>
@@ -84,7 +84,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {/* Sidebar Mobile */}
             <aside className={`fixed inset-y-0 left-0 bg-[#111111] w-64 transform transition-transform duration-300 z-50 lg:hidden flex flex-col ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                 <div className="h-16 flex items-center justify-between px-6 border-b border-white/5">
-                    <img src="/logo.png" alt="Logo" className="h-8 w-auto object-contain" />
+                    <img src="/logo.png" alt="Logo" className="h-14 w-auto object-contain" />
                     <button onClick={() => setMobileMenuOpen(false)} className="text-gray-400 hover:text-white">
                         <X className="w-6 h-6" />
                     </button>
@@ -112,7 +112,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </nav>
 
                 <div className="p-4 border-t border-white/5">
-                    <button onClick={() => signOut({ callbackUrl: '/login' })} className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-400 hover:text-red-400 transition-colors w-full rounded-lg hover:bg-red-500/10">
+                    <button onClick={() => signOut({ callbackUrl: '/' })} className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-400 hover:text-red-400 transition-colors w-full rounded-lg hover:bg-red-500/10">
                         <LogOut className="w-5 h-5" />
                         Sair do Painel
                     </button>

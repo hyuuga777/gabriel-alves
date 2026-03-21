@@ -91,7 +91,7 @@ export function AdminSidebar() {
                         <p className="text-xs text-gray-500 truncate">{session?.user?.email}</p>
                     </div>
                     <button
-                        onClick={() => signOut({ callbackUrl: '/login' })}
+                        onClick={() => signOut({ callbackUrl: '/' })}
                         className="p-1.5 text-gray-500 hover:text-red-400 transition-colors"
                         title="Sair"
                     >

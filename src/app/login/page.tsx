@@ -55,7 +55,7 @@ export default function LoginPage() {
             >
                 {/* Logo */}
                 <Link href="/" className="flex items-center justify-center gap-2 mb-8">
-                    <img src="/logo.png" alt="FitnessPro" className="h-12 w-auto" />
+                    <img src="/logo.png" alt="FitnessPro" className="h-[82px] w-auto object-contain" />
                 </Link>
 
                 {/* Form Card */}

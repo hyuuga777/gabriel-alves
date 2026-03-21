@@ -36,7 +36,7 @@ export function StudentSidebar() {
             alt="Logo"
             width={160}
             height={48}
-            className="h-10 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
+            className="h-[68px] w-auto object-contain group-hover:scale-105 transition-transform duration-300"
             priority
           />
         </Link>
