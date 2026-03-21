@@ -1,4 +1,4 @@
-﻿import { auth } from "@/lib/auth.config"
+import { auth } from "@/lib/auth.config"
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
@@ -8,7 +8,9 @@ export async function middleware(request: NextRequest) {
 
     // Rotas psblicas
     const publicRoutes = ['/', '/login', '/cadastro', '/assinar', '/contato', '/como-funciona', '/checkout', '/esqueci-senha']
-    const isPublicRoute = publicRoutes.some(route => pathname === route || pathname.startsWith(route))
+    const isPublicRoute = publicRoutes.some(route => 
+        route === '/' ? pathname === '/' : pathname.startsWith(route)
+    )
 
     // Se não está autenticado e tentando acessar rota privada
     if (!session && !isPublicRoute && !pathname.startsWith('/api')) {
