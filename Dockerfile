@@ -31,9 +31,11 @@ COPY --from=builder /app/.next/static ./.next/static
 # Copiar schema Prisma e client gerado
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
 
 EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["node", "server.js"]
+# Executar migrações do banco de dados na inicialização do container antes de iniciar o Next!
+CMD ["/bin/sh", "-c", "npx prisma migrate deploy && node server.js"]

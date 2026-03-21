@@ -126,7 +126,8 @@ export async function PUT(
                 data: {
                     alunoId: id,
                     treinoId,
-                    ativo: true
+                    ativo: true,
+                    diasSemana: []
                 }
             });
             return NextResponse.json(assignment);

@@ -1,4 +1,4 @@
-﻿import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { hash } from 'bcryptjs';
 
@@ -21,7 +21,7 @@ export async function GET() {
         const password = await hash('123456', 12);
 
         // 2. Admin
-        await prisma.user.create({
+        const admin = await prisma.user.create({
             data: {
                 email: 'admin@fitnesspro.com',
                 name: 'Treinador Principal',
@@ -52,11 +52,13 @@ export async function GET() {
 
         const exercicios = [];
         for (const ex of exerciciosData) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const criado = await prisma.exercicio.create({
                 data: {
                     nome: ex.nome,
-                    grupoMuscular: ex.grupo,
-                    videoUrl: ex.video
+                    grupoMuscular: ex.grupo as any,
+                    videoUrl: ex.video,
+                    equipamento: [],
                 }
             });
             exercicios.push(criado);
@@ -68,6 +70,7 @@ export async function GET() {
                 nome: 'Hipertrofia A - Peito e Tríceps',
                 descricao: 'Foco em volume moderado e carga progressiva.',
                 tipo: 'A',
+                treinadorId: admin.id,
                 exercicios: {
                     create: [
                         { exercicioId: exercicios[0].id, ordem: 0, series: 4, repeticoes: '8-10', descanso: 90 },
@@ -84,6 +87,7 @@ export async function GET() {
                 nome: 'Hipertrofia B - Costas e Bíceps',
                 descricao: 'Foco em largura e densidade dorsal.',
                 tipo: 'B',
+                treinadorId: admin.id,
                 exercicios: {
                     create: [
                         { exercicioId: exercicios[3].id, ordem: 0, series: 4, repeticoes: '10', descanso: 90 },
@@ -100,6 +104,7 @@ export async function GET() {
                 nome: 'Hipertrofia C - Pernas',
                 descricao: 'Treino intenso de membros inferiores.',
                 tipo: 'C',
+                treinadorId: admin.id,
                 exercicios: {
                     create: [
                         { exercicioId: exercicios[8].id, ordem: 0, series: 4, repeticoes: '6-8', descanso: 120 },
@@ -186,7 +191,8 @@ export async function GET() {
                             genero: Math.random() > 0.5 ? 'Masculino' : 'Feminino',
                             altura: 1.75,
                             pesoInicial: 70 + Math.random() * 20,
-                            nivelAtividade: 'Intermediário'
+                            nivelAtividade: 'Intermediário',
+                            objetivos: ['Hipertrofia', 'Ganho de forca']
                         }
                     },
                     atribuicoes: {
@@ -206,7 +212,8 @@ export async function GET() {
                                     nome: a.plano,
                                     descricao: 'Acesso total',
                                     preco: 100 + Math.random() * 200,
-                                    intervalo: a.plano.includes('Mensal') ? 'mensal' : (a.plano.includes('Trimestral') ? 'trimestral' : 'anual')
+                                    intervalo: a.plano.includes('Mensal') ? 'mensal' : (a.plano.includes('Trimestral') ? 'trimestral' : 'anual'),
+                                    recursos: ['Acesso ao app', 'Treino personalizado']
                                 }
                             }
                         }

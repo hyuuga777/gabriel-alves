@@ -56,7 +56,8 @@ async function main() {
             data: {
                 nome: ex.nome,
                 grupoMuscular: ex.grupo,
-                videoUrl: ex.video
+                videoUrl: ex.video,
+                equipamento: [],
             }
         });
         exercicios.push(criado);
@@ -70,6 +71,7 @@ async function main() {
             nome: 'Hipertrofia A - Peito e Tríceps',
             descricao: 'Foco em volume moderado e carga progressiva.',
             tipo: 'A',
+            treinadorId: admin.id,
             exercicios: {
                 create: [
                     { exercicioId: exercicios[0].id, ordem: 0, series: 4, repeticoes: '8-10', descanso: 90 }, // Supino
@@ -87,6 +89,7 @@ async function main() {
             nome: 'Hipertrofia B - Costas e Bíceps',
             descricao: 'Foco em largura e densidade dorsal.',
             tipo: 'B',
+            treinadorId: admin.id,
             exercicios: {
                 create: [
                     { exercicioId: exercicios[3].id, ordem: 0, series: 4, repeticoes: '10', descanso: 90 }, // Puxada
@@ -104,6 +107,7 @@ async function main() {
             nome: 'Hipertrofia C - Pernas',
             descricao: 'Treino intenso de membros inferiores.',
             tipo: 'C',
+            treinadorId: admin.id,
             exercicios: {
                 create: [
                     { exercicioId: exercicios[8].id, ordem: 0, series: 4, repeticoes: '6-8', descanso: 120 }, // Agachamento
@@ -194,7 +198,8 @@ async function main() {
                         genero: Math.random() > 0.5 ? 'Masculino' : 'Feminino',
                         altura: 1.75,
                         pesoInicial: 70 + Math.random() * 20,
-                        nivelAtividade: 'Intermediário'
+                        nivelAtividade: 'Intermediário',
+                        objetivos: ['Saúde', 'Hipertrofia']
                     }
                 },
                 atribuicoes: {
@@ -214,7 +219,8 @@ async function main() {
                                 nome: a.plano,
                                 descricao: 'Acesso total',
                                 preco: 100 + Math.random() * 200,
-                                intervalo: a.plano.includes('Mensal') ? 'mensal' : (a.plano.includes('Trimestral') ? 'trimestral' : 'anual')
+                                intervalo: a.plano.includes('Mensal') ? 'mensal' : (a.plano.includes('Trimestral') ? 'trimestral' : 'anual'),
+                                recursos: ['Treinos personalizados']
                             }
                         }
                     }

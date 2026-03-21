@@ -39,6 +39,7 @@ export async function POST(req: Request) {
                 nome,
                 grupoMuscular: grupoMuscular || [],
                 videoUrl: videoUrl || null,
+                equipamento: [],
             }
         });
 

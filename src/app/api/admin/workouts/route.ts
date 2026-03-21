@@ -24,6 +24,7 @@ export async function POST(req: Request) {
                 nome,
                 descricao,
                 tipo: tipo || 'Geral', // Default type
+                treinadorId: session.user.id,
                 exercicios: {
                     create: exercises.map((ex: { exercicioId: string; series: string; repeticoes: string; descanso: string; observacoes?: string }, index: number) => ({
                         exercicioId: ex.exercicioId,

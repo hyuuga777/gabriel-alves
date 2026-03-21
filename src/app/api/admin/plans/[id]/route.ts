@@ -20,8 +20,9 @@ function savePlans(plans: any[]) {
     fs.writeFileSync(dataFilePath, JSON.stringify(plans, null, 2));
 }
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
-    const id = parseInt(params.id);
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
+    const { id: rawId } = await params;
+    const id = parseInt(rawId);
     const body = await request.json();
     const plans = getPlans();
 
@@ -37,8 +38,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     return NextResponse.json(plans[index]);
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
-    const id = parseInt(params.id);
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
+    const { id: rawId } = await params;
+    const id = parseInt(rawId);
     let plans = getPlans();
 
     plans = plans.filter((p: any) => p.id !== id);

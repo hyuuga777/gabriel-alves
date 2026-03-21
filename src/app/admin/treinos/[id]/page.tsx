@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { ArrowLeft, Dumbbell, Users, Calendar, Edit2, Trash2, Plus, Clock, MoreVertical } from 'lucide-react';
 import Link from 'next/link';
@@ -43,75 +43,75 @@ export default function TreinoDetailPage({ params }: any) {
 
     const totalSeries = treino.exercicios.reduce((acc, ex) => acc + ex.series, 0);
     const totalExercicios = treino.exercicios.length;
-    const gruposMusculares = [...new Set(treino.exercicios.map(e => e.grupoMuscular))];
+    const gruposMusculates = [...new Set(treino.exercicios.map(e => e.grupoMuscular))];
 
     return (
-        <div className=max-w-4xl mx-auto space-y-8 pb-16>
+        <div className="max-w-4xl mx-auto space-y-8 pb-16">
 
             {/* Header */}
-            <div className=flex items-start justify-between gap-4 flex-wrap>
+            <div className="flex items-start justify-between gap-4 flex-wrap">
                 <div>
                     <Link
-                        href=/admin/treinos
-                        className=inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-white transition-colors mb-4
+                        href="/admin/treinos"
+                        className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-white transition-colors mb-4"
                     >
-                        <ArrowLeft className=w-4 h-4 />
+                        <ArrowLeft className="w-4 h-4" />
                         Voltar para Treinos
                     </Link>
-                    <h1 className=text-2xl font-bold text-white tracking-tight>{treino.titulo}</h1>
+                    <h1 className="text-2xl font-bold text-white tracking-tight">{treino.titulo}</h1>
                 </div>
-                <div className=flex items-center gap-3>
+                <div className="flex items-center gap-3">
                     <Link
                         href={`/admin/treinos/novo?edit=${treino.id}`}
-                        className=inline-flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-semibold rounded-xl transition-all
+                        className="inline-flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-semibold rounded-xl transition-all"
                     >
-                        <Edit2 className=w-4 h-4 />
+                        <Edit2 className="w-4 h-4" />
                         Editar
                     </Link>
-                    <button className=inline-flex items-center gap-2 px-4 py-2.5 bg-primary text-black text-sm font-bold rounded-xl hover:bg-primary/90 transition-all>
-                        <Plus className=w-4 h-4 />
+                    <button className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary text-black text-sm font-bold rounded-xl hover:bg-primary/90 transition-all">
+                        <Plus className="w-4 h-4" />
                         Adicionar Exercício
                     </button>
                 </div>
             </div>
 
             {/* Info Cards */}
-            <div className=grid grid-cols-2 sm:grid-cols-4 gap-4>
-                <div className=p-4 bg-[#111] border border-white/5 rounded-2xl>
-                    <p className=text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1>Aluno</p>
-                    <div className=flex items-center gap-2 mt-2>
-                        <div className=w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold text-primary>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="p-4 bg-[#111] border border-white/5 rounded-2xl">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1">Aluno</p>
+                    <div className="flex items-center gap-2 mt-2">
+                        <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold text-primary">
                             {treino.aluno.avatar}
                         </div>
-                        <span className=text-white text-sm font-semibold truncate>{treino.aluno.nome}</span>
+                        <span className="text-white text-sm font-semibold truncate">{treino.aluno.nome}</span>
                     </div>
                 </div>
-                <div className=p-4 bg-[#111] border border-white/5 rounded-2xl>
-                    <p className=text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1>Exercícios</p>
-                    <div className=flex items-center gap-2 mt-2>
-                        <Dumbbell className=w-4 h-4 text-primary />
-                        <span className=text-white text-xl font-bold>{totalExercicios}</span>
+                <div className="p-4 bg-[#111] border border-white/5 rounded-2xl">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1">Exercícios</p>
+                    <div className="flex items-center gap-2 mt-2">
+                        <Dumbbell className="w-4 h-4 text-primary" />
+                        <span className="text-white text-xl font-bold">{totalExercicios}</span>
                     </div>
                 </div>
-                <div className=p-4 bg-[#111] border border-white/5 rounded-2xl>
-                    <p className=text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1>Total Séries</p>
-                    <div className=flex items-center gap-2 mt-2>
-                        <Users className=w-4 h-4 text-blue-400 />
-                        <span className=text-white text-xl font-bold>{totalSeries}</span>
+                <div className="p-4 bg-[#111] border border-white/5 rounded-2xl">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1">Total Séries</p>
+                    <div className="flex items-center gap-2 mt-2">
+                        <Users className="w-4 h-4 text-blue-400" />
+                        <span className="text-white text-xl font-bold">{totalSeries}</span>
                     </div>
                 </div>
-                <div className=p-4 bg-[#111] border border-white/5 rounded-2xl>
-                    <p className=text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1>Criado em</p>
-                    <div className=flex items-center gap-2 mt-2>
-                        <Calendar className=w-4 h-4 text-gray-400 />
-                        <span className=text-white text-sm font-semibold>{treino.criadoEm}</span>
+                <div className="p-4 bg-[#111] border border-white/5 rounded-2xl">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1">Criado em</p>
+                    <div className="flex items-center gap-2 mt-2">
+                        <Calendar className="w-4 h-4 text-gray-400" />
+                        <span className="text-white text-sm font-semibold">{treino.criadoEm}</span>
                     </div>
                 </div>
             </div>
 
             {/* Grupos musculares badges */}
-            <div className=flex flex-wrap gap-2>
-                {gruposMusculares.map(grupo => {
+            <div className="flex flex-wrap gap-2">
+                {gruposMusculates.map(grupo => {
                     const colorClass = MUSCLE_COLORS[grupo] ?? 'text-gray-400 bg-gray-400/10';
                     return (
                         <span key={grupo} className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold ${colorClass}`}>
@@ -123,17 +123,17 @@ export default function TreinoDetailPage({ params }: any) {
 
             {/* Observações */}
             {treino.observacoes && (
-                <div className=p-5 bg-[#111] border border-white/5 rounded-2xl>
-                    <p className=text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-2>Observações do Treino</p>
-                    <p className=text-gray-300 text-sm leading-relaxed>{treino.observacoes}</p>
+                <div className="p-5 bg-[#111] border border-white/5 rounded-2xl">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-2">Observações do Treino</p>
+                    <p className="text-gray-300 text-sm leading-relaxed">{treino.observacoes}</p>
                 </div>
             )}
 
             {/* Lista de Exercícios */}
-            <div className=space-y-4>
-                <div className=flex items-center justify-between px-1>
-                    <h2 className=text-lg font-bold text-white>Exercícios</h2>
-                    <span className=text-xs text-gray-500>{totalExercicios} exercícios · {totalSeries} séries no total</span>
+            <div className="space-y-4">
+                <div className="flex items-center justify-between px-1">
+                    <h2 className="text-lg font-bold text-white">Exercícios</h2>
+                    <span className="text-xs text-gray-500">{totalExercicios} exercícios · {totalSeries} séries no total</span>
                 </div>
 
                 {treino.exercicios.map((ex, idx) => {
@@ -141,49 +141,49 @@ export default function TreinoDetailPage({ params }: any) {
                     return (
                         <div
                             key={ex.id}
-                            className=flex items-center gap-4 p-5 bg-[#111] border border-white/5 rounded-2xl hover:border-white/10 transition-all group
+                            className="flex items-center gap-4 p-5 bg-[#111] border border-white/5 rounded-2xl hover:border-white/10 transition-all group"
                         >
-                            {/* Nsmero */}
-                            <div className=w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-sm font-bold text-gray-500 shrink-0>
+                            {/* Número */}
+                            <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-sm font-bold text-gray-500 shrink-0">
                                 {idx + 1}
                             </div>
 
                             {/* Info Principal */}
-                            <div className=flex-1 min-w-0>
-                                <div className=flex items-center gap-2 mb-1>
+                            <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1">
                                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${colorClass}`}>
                                         {ex.grupoMuscular}
                                     </span>
                                 </div>
-                                <p className=text-white font-semibold truncate>{ex.nome}</p>
+                                <p className="text-white font-semibold truncate">{ex.nome}</p>
                             </div>
 
                             {/* Métricas */}
-                            <div className=hidden sm:flex items-center gap-6 text-center shrink-0>
+                            <div className="hidden sm:flex items-center gap-6 text-center shrink-0">
                                 <div>
-                                    <p className=text-[10px] font-bold uppercase text-gray-600 mb-0.5>Séries</p>
-                                    <p className=text-white font-bold>{ex.series}</p>
+                                    <p className="text-[10px] font-bold uppercase text-gray-600 mb-0.5">Séries</p>
+                                    <p className="text-white font-bold">{ex.series}</p>
                                 </div>
                                 <div>
-                                    <p className=text-[10px] font-bold uppercase text-gray-600 mb-0.5>Reps</p>
-                                    <p className=text-white font-bold>{ex.repeticoes}</p>
+                                    <p className="text-[10px] font-bold uppercase text-gray-600 mb-0.5">Reps</p>
+                                    <p className="text-white font-bold">{ex.repeticoes}</p>
                                 </div>
                                 <div>
-                                    <p className=text-[10px] font-bold uppercase text-gray-600 mb-0.5>Carga</p>
-                                    <p className=text-white font-bold>{ex.cargaSugerida || '—'}</p>
+                                    <p className="text-[10px] font-bold uppercase text-gray-600 mb-0.5">Carga</p>
+                                    <p className="text-white font-bold">{ex.cargaSugerida || '—'}</p>
                                 </div>
-                                <div className=flex items-center gap-1 text-gray-500>
-                                    <Clock className=w-3.5 h-3.5 />
-                                    <span className=text-sm font-medium>{ex.intervalo}s</span>
+                                <div className="flex items-center gap-1 text-gray-500">
+                                    <Clock className="w-3.5 h-3.5" />
+                                    <span className="text-sm font-medium">{ex.intervalo}s</span>
                                 </div>
                             </div>
 
                             {/* Ações */}
-                            <button className=opacity-0 group-hover:opacity-100 transition-opacity p-2 text-gray-600 hover:text-red-500 hover:bg-red-500/10 rounded-lg>
-                                <Trash2 className=w-4 h-4 />
+                            <button className="opacity-0 group-hover:opacity-100 transition-opacity p-2 text-gray-600 hover:text-red-500 hover:bg-red-500/10 rounded-lg">
+                                <Trash2 className="w-4 h-4" />
                             </button>
-                            <button className=opacity-0 group-hover:opacity-100 transition-opacity p-2 text-gray-600 hover:text-white hover:bg-white/10 rounded-lg>
-                                <MoreVertical className=w-4 h-4 />
+                            <button className="opacity-0 group-hover:opacity-100 transition-opacity p-2 text-gray-600 hover:text-white hover:bg-white/10 rounded-lg">
+                                <MoreVertical className="w-4 h-4" />
                             </button>
                         </div>
                     );
@@ -191,19 +191,19 @@ export default function TreinoDetailPage({ params }: any) {
 
                 {/* Botão adicionar no final */}
                 <button
-                    className=w-full flex items-center justify-center gap-2 p-4 border-2 border-dashed border-white/5 hover:border-white/15 rounded-2xl text-gray-500 hover:text-gray-300 transition-all hover:bg-white/2
+                    className="w-full flex items-center justify-center gap-2 p-4 border-2 border-dashed border-white/5 hover:border-white/15 rounded-2xl text-gray-500 hover:text-gray-300 transition-all hover:bg-white/[0.02]"
                 >
-                    <Plus className=w-5 h-5 />
-                    <span className=text-sm font-medium>Adicionar Exercício</span>
+                    <Plus className="w-5 h-5" />
+                    <span className="text-sm font-medium">Adicionar Exercício</span>
                 </button>
             </div>
 
             {/* Danger zone */}
-            <div className=p-5 border border-red-500/20 rounded-2xl bg-red-500/5>
-                <p className=text-sm font-bold text-red-400 mb-1>Zona de Perigo</p>
-                <p className=text-xs text-gray-500 mb-4>Esta ação é irreversível.</p>
-                <button className=inline-flex items-center gap-2 px-4 py-2 text-sm font-bold text-red-400 border border-red-500/30 hover:bg-red-500/10 rounded-xl transition-all>
-                    <Trash2 className=w-4 h-4 />
+            <div className="p-5 border border-red-500/20 rounded-2xl bg-red-500/5">
+                <p className="text-sm font-bold text-red-400 mb-1">Zona de Perigo</p>
+                <p className="text-xs text-gray-500 mb-4">Esta ação é irreversível.</p>
+                <button className="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold text-red-400 border border-red-500/30 hover:bg-red-500/10 rounded-xl transition-all">
+                    <Trash2 className="w-4 h-4" />
                     Excluir Treino
                 </button>
             </div>

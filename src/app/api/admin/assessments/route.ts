@@ -41,12 +41,13 @@ export async function POST(req: Request) {
         const assessment = await prisma.avaliacao.create({
             data: {
                 alunoId,
+                treinadorId: session.user.id,
                 tipo,
                 data: new Date(data),
                 peso: peso ? parseFloat(peso) : null,
-                bioimpedancia: bioimpedancia || {},
-                dobrasCutaneas: dobrasCutaneas || {},
-                perimetros: perimetros || {}
+                bioimpedancia: bioimpedancia ? bioimpedancia : undefined,
+                dobrasCutaneas: dobrasCutaneas ? dobrasCutaneas : undefined,
+                perimetros: perimetros ? perimetros : undefined
             }
         });
 
