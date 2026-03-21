@@ -16,7 +16,7 @@ export async function GET() {
                 assinatura: {
                     include: {
                         user: { select: { name: true, email: true, avatar: true } },
-                        plano: { select: { nome: true } }
+                        plano: { select: { name: true } }
                     }
                 }
             }
@@ -29,7 +29,7 @@ export async function GET() {
                 email: t.assinatura.user.email,
                 avatar: t.assinatura.user.avatar,
             },
-            plan: t.assinatura.plano.nome,
+            plan: t.assinatura.plano.name,
             amount: t.valor,
             status: t.status, // approved, pending, rejected
             method: t.metodoPagamento,

@@ -40,9 +40,9 @@ export async function GET(req: Request) {
         });
         let mrr = 0;
         activeSubscriptions.forEach(sub => {
-            let price = sub.plano.preco;
-            if (sub.plano.intervalo === 'anual') price = price / 12;
-            else if (sub.plano.intervalo === 'trimestral') price = price / 3;
+            let price = sub.plano.price;
+            if (sub.plano.period === 'anual') price = price / 12;
+            else if (sub.plano.period === 'trimestral') price = price / 3;
             mrr += price;
         });
 

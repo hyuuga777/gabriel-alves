@@ -66,7 +66,7 @@ export async function GET() {
                     select: { 
                         status: true,
                         dataFim: true,
-                        plano: { select: { nome: true } }
+                        plano: { select: { name: true } }
                     }
                 },
                 treinoLogs: {
@@ -125,12 +125,12 @@ export async function POST(req: Request) {
 
             if (plano) {
                 dataFim = new Date();
-                const intervalo = plano.intervalo.toLowerCase();
-                if (intervalo.includes('mensal') || intervalo === 'mês') {
+                const period = (plano.period || 'mensal').toLowerCase();
+                if (period.includes('mensal') || period === 'mês') {
                     dataFim.setMonth(dataFim.getMonth() + 1);
-                } else if (intervalo.includes('trimestral')) {
+                } else if (period.includes('trimestral')) {
                     dataFim.setMonth(dataFim.getMonth() + 3);
-                } else if (intervalo.includes('anual') || intervalo === 'ano') {
+                } else if (period.includes('anual') || period === 'ano') {
                     dataFim.setFullYear(dataFim.getFullYear() + 1);
                 } else {
                     // Default to 1 month if unknown

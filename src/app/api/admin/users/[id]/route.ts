@@ -130,7 +130,7 @@ export async function PUT(
                     'anual': 12
                 };
 
-                const meses = intervaloMap[plano.intervalo.toLowerCase()] || 1;
+                const meses = intervaloMap[(plano.period || 'mensal').toLowerCase()] || 1;
                 dataFim.setMonth(dataFim.getMonth() + meses);
 
                 await prisma.assinatura.upsert({

@@ -12,11 +12,18 @@ export async function GET() {
 
         const plans = await prisma.plano.findMany({
             orderBy: {
-                createdAt: 'desc'
+                price: 'asc'
             }
         });
 
-        return NextResponse.json(plans);
+        // Map database field 'desconto' to frontend field 'discount'
+        const mappedPlans = plans.map(plan => ({
+            ...plan,
+            discount: plan.desconto,
+            price: plan.price.toString()
+        }));
+
+        return NextResponse.json(mappedPlans);
     } catch (error) {
         console.error("[ADMIN_PLANS_GET]", error);
         return new NextResponse("Internal Error", { status: 500 });
@@ -49,22 +56,26 @@ export async function POST(req: Request) {
             return new NextResponse("Missing required fields (name, price, period)", { status: 400 });
         }
 
-        const plano = await prisma.plano.create({
+        const plan = await prisma.plano.create({
             data: {
                 name,
-                descricao: descricao || '',
+                descricao,
                 price: typeof price === 'string' ? parseFloat(price.replace(',', '.')) : price,
                 period,
-                features: features || [],
-                active: active ?? true,
-                highlight: highlight ?? false,
+                features,
+                active,
+                highlight,
                 highlightText,
                 desconto: discount,
-                gradient: gradient ?? false
+                gradient,
             }
         });
 
-        return NextResponse.json(plano);
+        return NextResponse.json({
+            ...plan,
+            discount: plan.desconto,
+            price: plan.price.toString()
+        });
     } catch (error) {
         console.error("[ADMIN_PLANS_POST]", error);
         return new NextResponse("Internal Error", { status: 500 });

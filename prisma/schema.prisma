@@ -94,16 +94,16 @@ enum StatusAssinatura {
 
 model Plano {
   id              String    @id @default(cuid())
-  name            String
+  nome            String
   descricao       String?
-  price           Float
-  period          String    // mensal, trimestral, anual
-  features        Json      // ["Treinos", "Chat"]
-  active          Boolean   @default(true)
-  highlight       Boolean   @default(false)
-  highlightText   String?
+  preco           Float
+  intervalo       String    // mensal, trimestral, anual
+  recursos        Json      // ["Treinos", "Chat"]
+  ativo           Boolean   @default(true)
+  destaque        Boolean   @default(false)
+  textoDestaque   String?
   desconto        String?
-  gradient        Boolean   @default(false)
+  gradiente       Boolean   @default(false)
   
   assinaturas     Assinatura[]
   

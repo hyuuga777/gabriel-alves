@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 export async function PUT(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const session = await auth();
@@ -14,19 +14,19 @@ export async function PUT(
         }
 
         const body = await req.json();
-        const { id } = params;
+        const { id } = await params;
 
-        const { 
-            name, 
-            descricao, 
-            price, 
-            period, 
-            features, 
-            active, 
-            highlight, 
-            highlightText, 
-            discount, 
-            gradient 
+        const {
+            name,
+            descricao,
+            price,
+            period,
+            features,
+            active,
+            highlight,
+            highlightText,
+            discount,
+            gradient
         } = body;
 
         const plan = await prisma.plano.update({
@@ -40,12 +40,17 @@ export async function PUT(
                 active,
                 highlight,
                 highlightText,
+                discount,
                 desconto: discount,
                 gradient,
             }
         });
 
-        return NextResponse.json(plan);
+        return NextResponse.json({
+            ...plan,
+            discount: plan.discount ?? plan.desconto,
+            price: plan.price.toString()
+        });
     } catch (error) {
         console.error("[ADMIN_PLAN_PUT]", error);
         return new NextResponse("Internal Error", { status: 500 });
@@ -54,7 +59,7 @@ export async function PUT(
 
 export async function DELETE(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const session = await auth();
@@ -63,9 +68,9 @@ export async function DELETE(
             return new NextResponse("Unauthorized", { status: 401 });
         }
 
-        const { id } = params;
+        const { id } = await params;
 
-        // Check if there are subscriptions for this plan
+        // Verificar se existem assinaturas vinculadas a este plano
         const subscriptionsCount = await prisma.assinatura.count({
             where: { planoId: id }
         });

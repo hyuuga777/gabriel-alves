@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Target, Activity, Heart, ShieldCheck, CheckCircle2, Zap, ArrowRight, Check, Star, Video, MessageCircle, FileText, Dumbbell, Loader2 } from 'lucide-react';

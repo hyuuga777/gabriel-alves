@@ -244,11 +244,11 @@ async function main() {
                         status: a.status as any,
                         plano: {
                             create: {
-                                nome: a.plano,
-                                descricao: 'Acesso total',
-                                preco: 100 + Math.random() * 200,
-                                intervalo: a.plano.includes('Mensal') ? 'mensal' : (a.plano.includes('Trimestral') ? 'trimestral' : 'anual'),
-                                recursos: ['Treinos personalizados']
+                                    nome: a.plano,
+                                    descricao: 'Acesso total',
+                                    preco: 100 + Math.random() * 200,
+                                    intervalo: a.plano.includes('Mensal') ? 'mensal' : (a.plano.includes('Trimestral') ? 'trimestral' : 'anual'),
+                                    recursos: ['Acesso ao app', 'Treino personalizado']
                             }
                         }
                     }
