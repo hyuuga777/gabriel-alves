@@ -45,7 +45,7 @@ export function StudentHeader({ student, onRegisterWorkout, onSendMessage }: Stu
                         <div className="text-sm text-gray-400 space-y-0.5">
                             <p>{student.email}</p>
                             <p className="text-xs text-gray-500">
-                                sltimo treino: {student.lastWorkout || '16 dias atrás'}
+                                último treino: {student.lastWorkout || '16 dias atrás'}
                             </p>
                         </div>
                     </div>

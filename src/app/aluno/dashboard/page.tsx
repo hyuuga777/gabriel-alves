@@ -85,7 +85,7 @@ export default function AlunoDashboard() {
       ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
       : 'bg-red-500/20 text-red-400 border-red-500/30';
 
-  // Dados do gráfico: sltimas 6 evoluções
+  // Dados do gráfico: últimas 6 evoluções
   const chartData = [...MOCK_EVOLUCAO].slice(-6).map((p) => ({
     data: new Date(p.data).toLocaleDateString('pt-BR', { month: 'short' }),
     peso: p.peso,
@@ -219,7 +219,7 @@ export default function AlunoDashboard() {
             <div className="flex items-center justify-between mb-5">
               <div>
                 <h3 className="font-bold text-white">Evolução do Peso</h3>
-                <p className="text-xs text-gray-500 mt-0.5">sltimos 6 registros</p>
+                <p className="text-xs text-gray-500 mt-0.5">últimos 6 registros</p>
               </div>
               <span
                 className="text-xs font-semibold px-2.5 py-1 rounded-full"

@@ -144,7 +144,7 @@ export default function AdminAlunosPage() {
                                 <th className="px-6 py-4 font-medium">Status</th>
                                 <th className="px-6 py-4 font-medium">Plano</th>
                                 <th className="px-6 py-4 font-medium">Vencimento</th>
-                                <th className="px-6 py-4 font-medium">sltimo Treino</th>
+                                <th className="px-6 py-4 font-medium">último Treino</th>
                                 <th className="px-6 py-4 font-medium text-right">Ações</th>
                             </tr>
                         </thead>

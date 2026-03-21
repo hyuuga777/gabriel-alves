@@ -19,7 +19,7 @@ export async function GET() {
         }
 
         // Buscar todos os alunos que tem mensagens ou são alunos ativos
-        // Para simplificar: buscar todos os alunos, e incluir a sltima mensagem
+        // Para simplificar: buscar todos os alunos, e incluir a última mensagem
         const alunos = await prisma.user.findMany({
             where: { role: 'ALUNO' },
             select: {
@@ -48,7 +48,7 @@ export async function GET() {
                 }
             });
 
-            // Determinar a sltima mensagem (seja enviada ou recebida)
+            // Determinar a última mensagem (seja enviada ou recebida)
             const lastReceived = aluno.mensagensRecebidas[0];
             const lastSent = aluno.mensagensEnviadas[0];
 
@@ -74,7 +74,7 @@ export async function GET() {
             };
         }));
 
-        // Ordenar por data da sltima mensagem (recentes primeiro)
+        // Ordenar por data da última mensagem (recentes primeiro)
         contacts.sort((a, b) => {
             const dateA = a.lastMessage?.createdAt ? new Date(a.lastMessage.createdAt).getTime() : 0;
             const dateB = b.lastMessage?.createdAt ? new Date(b.lastMessage.createdAt).getTime() : 0;

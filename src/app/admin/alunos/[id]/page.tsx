@@ -179,7 +179,7 @@ function AbaVisaoGeral({ aluno }: { aluno: any }) {
                     <p className="text-sm text-white font-medium">{aluno.treinosTotal} treinos</p>
                 </div>
                 <div>
-                    <p className="text-xs text-gray-500">sltimo Acesso</p>
+                    <p className="text-xs text-gray-500">último Acesso</p>
                     <p className="text-sm text-white font-medium">{aluno.ultimoTreino}</p>
                 </div>
             </div>

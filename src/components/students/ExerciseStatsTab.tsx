@@ -126,7 +126,7 @@ export function ExerciseStatsTab({ student }: ExerciseStatsTabProps) {
                         <div className="flex justify-between items-center mb-6">
                             <h3 className="font-semibold text-gray-900">Visão geral das estatísticas</h3>
                             <button className="flex items-center gap-2 px-3 py-1.5 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50">
-                                sltimas 12 semanas
+                                últimas 12 semanas
                                 <ChevronDown className="w-4 h-4" />
                             </button>
                         </div>

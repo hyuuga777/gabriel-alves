@@ -131,7 +131,7 @@ export function AdvancedStatsTab({ student }: AdvancedStatsTabProps) {
                             <div className="relative">
                                 <button className="flex items-center gap-2 px-3 py-1.5 border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-50 bg-white">
                                     <Calendar className="w-4 h-4 text-gray-500" />
-                                    sltimos 3 meses
+                                    últimos 3 meses
                                     <ChevronDown className="w-3 h-3 text-gray-400" />
                                 </button>
                             </div>

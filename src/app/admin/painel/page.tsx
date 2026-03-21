@@ -208,7 +208,7 @@ export default function AdminDashboard() {
           <div className="flex items-start justify-between mb-6">
             <div>
               <h2 className="text-base font-bold text-white">
-                Receita — sltimos 6 Meses
+                Receita — últimos 6 Meses
               </h2>
               <p className="text-xs text-gray-500 mt-0.5">
                 Desempenho de novas assinaturas
@@ -256,7 +256,7 @@ export default function AdminDashboard() {
           </div>
         </motion.div>
 
-        {/* sltimas Atividades */}
+        {/* últimas Atividades */}
         <motion.div
           variants={item}
           className="rounded-2xl border border-white/8 p-6 flex flex-col"
@@ -268,7 +268,7 @@ export default function AdminDashboard() {
         >
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-base font-bold text-white">
-              sltimas Atividades
+              últimas Atividades
             </h2>
             <History className="w-4 h-4 text-gray-500" />
           </div>

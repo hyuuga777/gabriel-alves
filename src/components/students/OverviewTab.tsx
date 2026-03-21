@@ -66,7 +66,7 @@ export function OverviewTab({ student }: OverviewTabProps) {
                 {/* Right Column: Activities */}
                 <div className="bg-[#111] border border-white/5 rounded-xl p-6 h-fit">
                     <div className="flex justify-between items-center mb-6">
-                        <h3 className="font-medium text-white">sltimas Atividades</h3>
+                        <h3 className="font-medium text-white">últimas Atividades</h3>
                         <button className="text-primary text-sm font-medium hover:underline">Ver tudo</button>
                     </div>
 

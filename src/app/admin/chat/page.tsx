@@ -127,7 +127,7 @@ export default function AdminChatPage() {
             if (res.ok) {
                 const sentMessage = await res.json();
                 setMessages(prev => prev.map(m => m.id === tempData.id ? sentMessage : m));
-                fetchContacts(); // Atualizar sltima mensagem na lista
+                fetchContacts(); // Atualizar última mensagem na lista
             }
         } catch (error) {
             console.error('Failed to send message', error);
