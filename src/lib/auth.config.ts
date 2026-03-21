@@ -2,6 +2,8 @@ import NextAuth from "next-auth"
 import type { NextAuthConfig } from "next-auth"
 
 export const authConfig = {
+    trustHost: true, // Necessário quando em deploy atrás de proxy como o Traefik do Coolify
+    secret: process.env.AUTH_SECRET || "fallback_secret_for_development_only_1234567890", // Previne erro 500 se variável não estiver definida
     pages: {
         signIn: "/login",
         error: "/login",
