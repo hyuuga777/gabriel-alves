@@ -1,0 +1,151 @@
+{
+  "users": [
+    {
+      "id": "std-1",
+      "name": "Carlos Oliveira",
+      "email": "carlos.oliver@gmail.com",
+      "role": "ALUNO",
+      "assinatura": {
+        "status": "ATIVA",
+        "plano": {
+          "nome": "Plano VIP"
+        }
+      },
+      "treinoLogs": [],
+      "bio": "Buscando alta performance e definição muscular.",
+      "link": "https://instagram.com/carlos_treino",
+      "birthDate": "1992-05-15",
+      "gender": "masculino",
+      "phone": "(11) 99876-5432",
+      "address": "Rua Augusta, 1500, São Paulo - SP",
+      "avatar": ""
+    },
+    {
+      "id": "std-2",
+      "name": "Mariana Souza",
+      "email": "mari.souza@yahoo.com",
+      "role": "ALUNO",
+      "assinatura": {
+        "status": "ATIVA",
+        "plano": {
+          "nome": "Plano Pro"
+        }
+      },
+      "treinoLogs": [],
+      "bio": "Foco em emagrecimento e qualidade de vida.",
+      "link": "",
+      "birthDate": "1998-11-22",
+      "gender": "feminino",
+      "phone": "(21) 98765-4321",
+      "address": "Av. Atlântica, 500, Rio de Janeiro - RJ",
+      "avatar": ""
+    },
+    {
+      "id": "std-3",
+      "name": "Ricardo Santos",
+      "email": "ricardo.santos@outlook.com",
+      "role": "ALUNO",
+      "assinatura": {
+        "status": "SUSPENSA",
+        "plano": {
+          "nome": "Plano Basic"
+        }
+      },
+      "treinoLogs": [],
+      "bio": "Atleta amador de crossfit.",
+      "link": "https://strava.com/athletes/ricardos",
+      "birthDate": "1985-03-10",
+      "gender": "masculino",
+      "phone": "(31) 97777-8888",
+      "address": "Rua da Bahia, 120, Belo Horizonte - MG",
+      "avatar": ""
+    },
+    {
+      "id": "std-4",
+      "name": "Fernanda Lima",
+      "email": "fernanda.fitness@gmail.com",
+      "role": "ALUNO",
+      "assinatura": {
+        "status": "ATIVA",
+        "plano": {
+          "nome": "Plano VIP"
+        }
+      },
+      "treinoLogs": [],
+      "bio": "Amante do yoga e musculação funcional.",
+      "link": "",
+      "birthDate": "1994-07-30",
+      "gender": "feminino",
+      "phone": "(41) 96666-5555",
+      "address": "Rua XV de Novembro, 300, Curitiba - PR",
+      "avatar": ""
+    },
+    {
+      "id": "std-5",
+      "name": "Lucas Pereira",
+      "email": "lucas.p@bol.com.br",
+      "role": "ALUNO",
+      "assinatura": {
+        "status": "ATIVA",
+        "plano": {
+          "nome": "Plano Pro"
+        }
+      },
+      "treinoLogs": [],
+      "bio": "Iniciando jornada rumo ao primeiro campeonato de bodybuilding.",
+      "link": "",
+      "birthDate": "2001-01-12",
+      "gender": "masculino",
+      "phone": "(51) 95555-4444",
+      "address": "Av. Ipiranga, 1000, Porto Alegre - RS",
+      "avatar": ""
+    },
+    {
+      "id": "std-6",
+      "name": "Beatriz Rocha",
+      "email": "bia.rocha@gmail.com",
+      "role": "ALUNO",
+      "assinatura": {
+        "status": "VENCIDA",
+        "plano": {
+          "nome": "Plano Basic"
+        }
+      },
+      "treinoLogs": [],
+      "bio": "Treino para manter a saúde mental e física em dia.",
+      "link": "",
+      "birthDate": "1990-09-05",
+      "gender": "feminino",
+      "phone": "(61) 94444-3333",
+      "address": "Asa Sul, Bloco K, Brasília - DF",
+      "avatar": ""
+    },
+    {
+      "id": "std-7",
+      "name": "João Mendes",
+      "email": "joao.mendes@uol.com.br",
+      "role": "ALUNO",
+      "assinatura": {
+        "status": "ATIVA",
+        "plano": {
+          "nome": "Plano VIP"
+        }
+      },
+      "treinoLogs": [],
+      "bio": "Ex-atleta de futebol, hoje focado em hipertrofia.",
+      "link": "",
+      "birthDate": "1988-12-25",
+      "gender": "masculino",
+      "phone": "(71) 93333-2222",
+      "address": "Barra, Salvador - BA",
+      "avatar": ""
+    }
+  ],
+  "workouts": [],
+  "exercises": [],
+  "activities": [],
+  "config": {
+    "name": "Admin",
+    "email": "admin@fitness.com"
+  }
+}

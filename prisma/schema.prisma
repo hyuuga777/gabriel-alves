@@ -1,0 +1,333 @@
+// Schema Prisma - Plataforma SaaS de Fitness
+// Modelos completos para gestão de alunos, treinos e avaliações físicas
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ===== USUÁRIOS E AUTENTICAÇÃO =====
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String
+  password      String
+  role          Role      @default(ALUNO)
+  avatar        String?
+  telefone      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relações
+  alunoProfile          AlunoProfile?
+  assinatura            Assinatura?
+  treinoLogs            TreinoLog[]
+  avaliacoes            Avaliacao[]           @relation("AvaliacoesAluno")
+  mensagensEnviadas     Mensagem[]            @relation("MensagensEnviadas")
+  mensagensRecebidas    Mensagem[]            @relation("MensagensRecebidas")
+  notificacoes          Notificacao[]
+  atribuicoes           AtribuicaoTreino[]
+  // Relações como TREINADOR (multi-tenancy)
+  treinosCriados        Treino[]              @relation("TreinosDoTreinador")
+  avaliacoesRealizadas  Avaliacao[]           @relation("AvaliacoesTreinador")
+}
+
+enum Role {
+  ALUNO
+  TREINADOR
+  ADMIN
+}
+
+model AlunoProfile {
+  id                String    @id @default(cuid())
+  userId            String    @unique
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Dados da anamnese
+  dataNascimento    DateTime
+  genero            String
+  altura            Float     // em metros
+  pesoInicial       Float     // em kg
+  objetivos         String    @db.LongText
+  restricoes        String?
+  historicoSaude    String?
+  nivelAtividade    String
+  
+  // Status
+  onboardingCompleto Boolean  @default(false)
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+// ===== ASSINATURAS E PAGAMENTOS =====
+
+model Assinatura {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  planoId         String
+  plano           Plano     @relation(fields: [planoId], references: [id])
+  
+  status          StatusAssinatura @default(ATIVA)
+  dataInicio      DateTime  @default(now())
+  dataFim         DateTime?
+  
+  pagamentos      Pagamento[]
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+enum StatusAssinatura {
+  ATIVA
+  CANCELADA
+  SUSPENSA
+  EXPIRADA
+}
+
+model Plano {
+  id              String    @id @default(cuid())
+  nome            String
+  descricao       String?
+  preco           Float
+  intervalo       String    // mensal, trimestral, anual
+  recursos        String    @db.LongText
+  ativo           Boolean   @default(true)
+  destaque        Boolean   @default(false)
+  textoDestaque   String?
+  desconto        String?
+  gradiente       Boolean   @default(false)
+  
+  assinaturas     Assinatura[]
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model Pagamento {
+  id              String    @id @default(cuid())
+  assinaturaId    String
+  assinatura      Assinatura @relation(fields: [assinaturaId], references: [id], onDelete: Cascade)
+  
+  valor           Float
+  status          String    // approved, pending, rejected
+  metodoPagamento String
+  transacaoId     String?   // ID do Mercado Pago
+  preferenceId    String?   // Mercado Pago preference ID
+  
+  createdAt       DateTime  @default(now())
+}
+
+// ===== EXERCÍCIOS E TREINOS =====
+
+model Exercicio {
+  id              String    @id @default(cuid())
+  nome            String
+  descricao       String?   @db.Text
+  grupoMuscular   String    @db.LongText
+  equipamento     String    @db.LongText
+  videoUrl        String?
+  gifUrl          String?
+  instrucoes      String?   @db.Text
+  
+  exerciciosTreino ExercicioTreino[]
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model Treino {
+  id              String    @id @default(cuid())
+  nome            String
+  descricao       String?   @db.Text
+  tipo            String    // A, B, C, ABC, ABCD
+  
+  // Multi-tenancy: identifica qual treinador criou este treino
+  treinadorId     String
+  treinador       User      @relation("TreinosDoTreinador", fields: [treinadorId], references: [id])
+  
+  exercicios      ExercicioTreino[]
+  atribuicoes     AtribuicaoTreino[]
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@index([treinadorId])
+}
+
+model ExercicioTreino {
+  id              String    @id @default(cuid())
+  treinoId        String
+  treino          Treino    @relation(fields: [treinoId], references: [id], onDelete: Cascade)
+  
+  exercicioId     String
+  exercicio       Exercicio @relation(fields: [exercicioId], references: [id])
+  
+  ordem           Int
+  series          Int
+  repeticoes      String    // "8-12" ou "12" ou "AMRAP"
+  descanso        Int       // segundos
+  observacoes     String?   @db.Text
+  
+  logs            ExercicioLog[]
+  
+  @@unique([treinoId, ordem])
+}
+
+model AtribuicaoTreino {
+  id              String    @id @default(cuid())
+  treinoId        String
+  treino          Treino    @relation(fields: [treinoId], references: [id], onDelete: Cascade)
+  
+  alunoId         String
+  aluno           User      @relation(fields: [alunoId], references: [id], onDelete: Cascade)
+  
+  diasSemana      String    @db.LongText
+  ativo           Boolean   @default(true)
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@unique([treinoId, alunoId])
+}
+
+// ===== LOGS DE TREINO =====
+
+model TreinoLog {
+  id              String    @id @default(cuid())
+  alunoId         String
+  aluno           User      @relation(fields: [alunoId], references: [id], onDelete: Cascade)
+  
+  treinoId        String
+  treinoNome      String    // denormalizado para histórico
+  
+  dataInicio      DateTime  @default(now())
+  dataFim         DateTime?
+  completo        Boolean   @default(false)
+  
+  exercicios      ExercicioLog[]
+  
+  createdAt       DateTime  @default(now())
+}
+
+model ExercicioLog {
+  id                  String    @id @default(cuid())
+  treinoLogId         String
+  treinoLog           TreinoLog @relation(fields: [treinoLogId], references: [id], onDelete: Cascade)
+  
+  exercicioTreinoId   String
+  exercicioTreino     ExercicioTreino @relation(fields: [exercicioTreinoId], references: [id])
+  
+  exercicioNome       String    // denormalizado
+  
+  carga               Float?    // kg
+  repeticoes          Int?
+  rpe                 Int?      // 1-10 (Rate of Perceived Exertion)
+  notas               String?   @db.Text
+  concluido           Boolean   @default(false)
+  
+  createdAt           DateTime  @default(now())
+}
+
+// ===== AVALIAÇÃO FÍSICA =====
+
+model Avaliacao {
+  id              String    @id @default(cuid())
+  alunoId         String
+  aluno           User      @relation("AvaliacoesAluno", fields: [alunoId], references: [id], onDelete: Cascade)
+  
+  // Multi-tenancy: identifica qual treinador realizou a avaliação
+  treinadorId     String
+  treinador       User      @relation("AvaliacoesTreinador", fields: [treinadorId], references: [id])
+  
+  tipo            String    // "inicial", "mensal", "trimestral"
+  data            DateTime  @default(now())
+  
+  // Composição Corporal
+  peso            Float?    // kg
+  bioimpedancia   Json?     // {massaMagra, massaGorda, aguaCorporal, massaOssea}
+  dobrasCutaneas  Json?     // {triceps, subescapular, biceps, suprailiaca, abdomen, coxa, panturrilha}
+  perimetros      Json?     // {abdomen, bracoD, bracoE, pernaD, pernaE, cintura, quadril}
+  
+  // Avaliação Funcional
+  mobilidade      Json?     // checklist de mobilidade articular
+  encurtamentos   Json?     // avaliação de flexibilidade
+  postura         Json?     // análise postural
+  assimetrias     Json?     // comparação bilateral
+  
+  // Performance
+  cooperTest      Float?    // distância em metros
+  forcaMaxima     Json?     // {supino: 80, agachamento: 120}
+  potenciaIso     Json?     // {direita: X, esquerda: Y}
+  
+  // Calculados automaticamente
+  percentualGordura Float?
+  vo2Max            Float?
+  percentVO2        Float?
+  mets              Float?
+  gastoCalorico     Float?
+  
+  // Fotos
+  fotos           FotoAvaliacao[]
+  
+  observacoes     String?   @db.Text
+  
+  createdAt       DateTime  @default(now())
+  
+  @@index([alunoId, data])
+  @@index([treinadorId])
+}
+
+model FotoAvaliacao {
+  id              String    @id @default(cuid())
+  avaliacaoId     String
+  avaliacao       Avaliacao @relation(fields: [avaliacaoId], references: [id], onDelete: Cascade)
+  
+  url             String
+  tipo            String    // "frente", "costas", "lateral_direita", "lateral_esquerda"
+  
+  createdAt       DateTime  @default(now())
+}
+
+// ===== COMUNICAÇÃO =====
+
+model Mensagem {
+  id              String    @id @default(cuid())
+  remetenteId     String
+  remetente       User      @relation("MensagensEnviadas", fields: [remetenteId], references: [id], onDelete: Cascade)
+  
+  destinatarioId  String
+  destinatario    User      @relation("MensagensRecebidas", fields: [destinatarioId], references: [id], onDelete: Cascade)
+  
+  conteudo        String    @db.Text
+  anexoUrl        String?   // URL de foto/vídeo compartilhado
+  lida            Boolean   @default(false)
+  
+  createdAt       DateTime  @default(now())
+  
+  @@index([remetenteId, destinatarioId])
+  @@index([destinatarioId, lida])
+}
+
+model Notificacao {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  tipo            String    // "treino", "avaliacao", "pagamento", "sistema"
+  titulo          String
+  mensagem        String    @db.Text
+  link            String?   // URL para redirecionar ao clicar
+  lida            Boolean   @default(false)
+  
+  createdAt       DateTime  @default(now())
+  
+  @@index([userId, lida])
+}

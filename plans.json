@@ -1,0 +1,53 @@
+[
+    {
+        "id": 1,
+        "name": "Mensal",
+        "price": "129,90",
+        "period": "/mês",
+        "features": [
+            "Treinos personalizados",
+            "Avaliação física mensal",
+            "Chat com treinador",
+            "App mobile completo",
+            "Suporte via WhatsApp"
+        ],
+        "highlight": false,
+        "highlightText": null,
+        "discount": null,
+        "gradient": false
+    },
+    {
+        "id": 2,
+        "name": "Trimestral",
+        "price": "109,90",
+        "period": "/mês",
+        "features": [
+            "Tudo do plano Mensal",
+            "Reavaliação a cada 30 dias",
+            "Ajustes de treino ilimitados",
+            "Consultoria nutricional básica",
+            "Prioridade no atendimento"
+        ],
+        "highlight": true,
+        "highlightText": "MAIS POPULAR",
+        "discount": "Economize 15%",
+        "gradient": true
+    },
+    {
+        "id": 3,
+        "name": "Anual",
+        "price": "89,90",
+        "period": "/mês",
+        "features": [
+            "Tudo do plano Trimestral",
+            "Consultoria nutricional completa",
+            "Acesso vitalício à plataforma",
+            "Comunidade VIP exclusiva",
+            "Suporte prioritário 24/7"
+        ],
+        "highlight": false,
+        "highlightText": null,
+        "discount": "Economize 28%",
+        "gradient": false
+    }
+]

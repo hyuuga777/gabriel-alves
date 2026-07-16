@@ -1,0 +1,52 @@
+Td perfeito ate entao, mas agora navegando pelo sistema notei coisas que nao funciona
+
+1 https://ogabrielalves.app/admin/painel
+
+no banco tem mais usuarios que aparenta ai, tem que atualizar todos itens deste dashbord, alunos ativos, faturamento toral,pendentes
+
+quadro receita e ultimas atividades
+
+
+2 https://ogabrielalves.app/admin/usuarios tudo perfeito e funcional, mas quando eu estou aqui nesta aba, e nome menu fica selecionado esta aba mas tb fica selecionada a aba dashbord (selecionada eu digo em azul igual do print ) 
+
+
+3 https://ogabrielalves.app/admin/alunos
+
+nao da para add novo aluno
+
+
+4 https://ogabrielalves.app/admin/alunos/cmn19pv2z00awpf0k5sz93xxf pagina interna do aluno 
+
+esta bem incompleta! estou te enviando print do concorrente para tu ver o que tem dentro da pagina do cliente, temos que ter tudo igual, ok ? simplificando, o perfil do aluno que eh exbido dentro do painel adm @beautifulMention dentro desta pasta coloquei print de cada uma das janelas dentro do perfil do cliente, q precisamos ter tb dentro do nosso sistema ok?
+
+
+5 https://ogabrielalves.app/admin/treinos > https://ogabrielalves.app/admin/treinos/novo ao clicar aqui para criar um novo retirar Vincular a Aluno  e se eu tento criar novo treino e clico em salvar quando volta para pagina de treinos o treino novo nao existe 
+
+6 https://ogabrielalves.app/admin/exercicios ao clica no botao novo exercio nao acontece nada tem que abrir pagina para add novo exercio , na pagina https://ogabrielalves.app/admin/exercicios se clico em editar exercio nao acontece nada tb 
+
+
+7 https://ogabrielalves.app/admin/planos aqui ta cheio de planos, ta errado, sao apenas 2 planos:
+
+## Plano Basic
+Treino personalizado
+Check-in a cada **15 dias**
+Ajustes periódicos do planejamento
+Correção de execução dos exercícios **(até 3 vídeos por semana)**
+Suporte para dúvidas
+---
+## Plano Ultra
+Treino personalizado
+Check-in **semanal**
+Acompanhamento mais próximo da evolução
+Correção de execução **ilimitada de vídeos**
+Ajustes estratégicos constantes
+Possibilidade de chamada para alinhamento
+
+8 https://ogabrielalves.app/admin/financeiro ta tudo zerado, coloque informacoes de exemplo
+
+9 https://ogabrielalves.app/admin/config ao alterar nome nao acontece nada, mesma coisa para os outros campos, e o campo de alterar senha nao funciona e nao tem campo para alterar a foto do adm e quando alterar a foto do adm , deve mudar em cima do lado direito
+
+ao clicar em sair da erro, nao esta indo para landpage 
+
+10 a logo do adm ta estranha, aumenta ela e largura tb para ficar certa 
+
