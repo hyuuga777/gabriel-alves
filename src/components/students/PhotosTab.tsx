@@ -62,11 +62,13 @@ export function PhotosTab() {
 
             reader.onload = (event) => {
                 const base64Url = event.target?.result as string;
+                const type = window.prompt("Qual a visão da foto? (Ex: Frente, Lado, Costas)", "Frente") || "Frente";
+                
                 const newPhoto = {
                     id: Math.random().toString(),
                     date: 'Hoje',
-                    weight: 'Fictício kg',
-                    type: 'Nova Foto',
+                    weight: '--', // Viria do banco
+                    type: type,
                     url: base64Url
                 };
                 

@@ -33,7 +33,9 @@ export function SettingsTab({ student, onUpdate }: { student?: any, onUpdate?: (
         name: student?.name || '',
         email: student?.email || '',
         plan: student?.assinatura?.plano?.nome || 'Nenhum plano',
-        startDate: student?.createdAt ? new Date(student.createdAt).toLocaleDateString('pt-BR') : '—'
+        planValue: student?.assinatura?.plano?.preco || '0.00',
+        startDate: student?.assinatura?.dataInicio ? new Date(student.assinatura.dataInicio).toLocaleDateString('pt-BR') : (student?.createdAt ? new Date(student.createdAt).toLocaleDateString('pt-BR') : '—'),
+        endDate: student?.assinatura?.dataFim ? new Date(student.assinatura.dataFim).toLocaleDateString('pt-BR') : '—',
     });
 
     useEffect(() => {
@@ -42,7 +44,9 @@ export function SettingsTab({ student, onUpdate }: { student?: any, onUpdate?: (
                 name: student.name || '',
                 email: student.email || '',
                 plan: student.assinatura?.plano?.nome || 'Nenhum plano',
-                startDate: student.createdAt ? new Date(student.createdAt).toLocaleDateString('pt-BR') : '—'
+                planValue: student.assinatura?.plano?.preco || '0.00',
+                startDate: student.assinatura?.dataInicio ? new Date(student.assinatura.dataInicio).toLocaleDateString('pt-BR') : (student?.createdAt ? new Date(student.createdAt).toLocaleDateString('pt-BR') : '—'),
+                endDate: student.assinatura?.dataFim ? new Date(student.assinatura.dataFim).toLocaleDateString('pt-BR') : '—',
             });
         }
     }, [student]);
@@ -317,16 +321,18 @@ export function SettingsTab({ student, onUpdate }: { student?: any, onUpdate?: (
 
                         <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
                             {[
-                                { key: 'name', label: 'Nome Completo', value: profile.name, icon: User },
-                                { key: 'email', label: 'E-mail de Acesso', value: profile.email, icon: Mail },
-                                { key: 'plan', label: 'Tipo de Plano', value: profile.plan, icon: CreditCard },
-                                { key: 'startDate', label: 'Data de Início', value: profile.startDate, icon: Bell },
+                                { key: 'name', label: 'Nome Completo', value: profile.name, icon: User, editable: true },
+                                { key: 'email', label: 'E-mail de Acesso', value: profile.email, icon: Mail, editable: true },
+                                { key: 'plan', label: 'Plano Adquirido', value: profile.plan, icon: CreditCard, editable: true },
+                                { key: 'planValue', label: 'Valor do Plano (R$)', value: profile.planValue, icon: CreditCard, editable: true },
+                                { key: 'startDate', label: 'Data de Início', value: profile.startDate, icon: Bell, editable: true },
+                                { key: 'endDate', label: 'Data de Fim', value: profile.endDate, icon: Bell, editable: true },
                             ].map((field) => (
                                 <div key={field.label} className="space-y-2">
                                     <label className="text-[10px] text-gray-500 font-bold uppercase tracking-widest block">{field.label}</label>
                                     <div className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl border border-white/5 group hover:border-white/20 transition-all">
                                         <field.icon className="w-4 h-4 text-gray-600 group-hover:text-primary transition-colors flex-shrink-0" />
-                                        {isEditing && (field.key === 'name' || field.key === 'email') ? (
+                                        {isEditing && field.editable ? (
                                             <input
                                                 type="text"
                                                 value={field.value}

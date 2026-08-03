@@ -1,13 +1,25 @@
 'use client';
 
 import { useSession, signOut } from 'next-auth/react';
-import { User, Lock, Camera, Trash2, Eye, EyeOff, Save, Shield, Settings, AlertCircle, LogOut, CreditCard, ChevronRight } from 'lucide-react';
+import { User, Lock, Camera, Eye, EyeOff, Save, Shield, Settings, AlertCircle, LogOut, CreditCard, ChevronRight, ClipboardList, Target, Activity, Dumbbell } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+const DIAS_SEMANA = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
+
+const METODOS_TREINO = [
+    'Repetições Forçadas / Roubadas',
+    'Drop-Set / Exaustão',
+    'Excêntrico / Negativo',
+    'Concentrado',
+    'Rest-Pause',
+    'Super-Série',
+    'Pirâmide',
+];
+
 export default function StudentProfilePage() {
     const { data: session } = useSession();
-    const [activeTab, setActiveTab] = useState<'perfil' | 'conta' | 'infos'>('perfil');
+    const [activeTab, setActiveTab] = useState<'perfil' | 'conta' | 'infos' | 'anamnese'>('anamnese');
     const [loading, setLoading] = useState(false);
 
     // Profile State
@@ -22,8 +34,23 @@ export default function StudentProfilePage() {
         avatar: ''
     });
 
+    // Anamnese State
+    const [anamnese, setAnamnese] = useState({
+        peso: '',
+        altura: '',
+        objetivos: '',
+        doresIntensidade: '',
+        historicoDeSaude: '',
+        lesoes: '',
+        exerciciosProibidos: '',
+        pontosFracos: '',
+        pontosFortes: '',
+        nivelAtividade: 'moderado',
+        diasDisponiveis: [] as string[],
+        metodosUtilizados: [] as string[],
+    });
+
     useEffect(() => {
-        // Fetch user data on mount
         fetch('/api/aluno/perfil')
             .then(res => res.json())
             .then(data => {
@@ -38,6 +65,18 @@ export default function StudentProfilePage() {
                         address: data.address || '',
                         avatar: data.avatar || session?.user?.image || ''
                     });
+                    if (data.alunoProfile) {
+                        setAnamnese(prev => ({
+                            ...prev,
+                            objetivos: data.alunoProfile.objetivos || '',
+                            doresIntensidade: data.alunoProfile.doresIntensidade || '',
+                            pontosFracos: data.alunoProfile.pontosFracos || '',
+                            pontosFortes: data.alunoProfile.pontosFortes || '',
+                            exerciciosProibidos: data.alunoProfile.exerciciosProibidos || '',
+                            diasDisponiveis: data.alunoProfile.diasDisponiveis || [],
+                            metodosUtilizados: data.alunoProfile.metodosUtilizados || [],
+                        }));
+                    }
                 }
             })
             .catch(console.error);
@@ -49,7 +88,7 @@ export default function StudentProfilePage() {
             const res = await fetch('/api/aluno/perfil', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(profileData)
+                body: JSON.stringify({ ...profileData, anamnese })
             });
             if (res.ok) {
                 alert('Configurações salvas com sucesso!');
@@ -63,10 +102,29 @@ export default function StudentProfilePage() {
         }
     };
 
+    const toggleDia = (dia: string) => {
+        setAnamnese(prev => ({
+            ...prev,
+            diasDisponiveis: prev.diasDisponiveis.includes(dia)
+                ? prev.diasDisponiveis.filter(d => d !== dia)
+                : [...prev.diasDisponiveis, dia]
+        }));
+    };
+
+    const toggleMetodo = (metodo: string) => {
+        setAnamnese(prev => ({
+            ...prev,
+            metodosUtilizados: prev.metodosUtilizados.includes(metodo)
+                ? prev.metodosUtilizados.filter(m => m !== metodo)
+                : [...prev.metodosUtilizados, metodo]
+        }));
+    };
+
     const tabs = [
+        { id: 'anamnese', label: 'Anamnese', icon: ClipboardList },
         { id: 'perfil', label: 'Perfil', icon: User },
         { id: 'infos', label: 'Informações', icon: Shield },
-        { id: 'conta', label: 'Conta e Segurança', icon: Lock },
+        { id: 'conta', label: 'Conta', icon: Lock },
     ] as const;
 
     return (
@@ -116,6 +174,204 @@ export default function StudentProfilePage() {
                 </header>
 
                 <AnimatePresence mode="wait">
+                    {activeTab === 'anamnese' && (
+                        <motion.div
+                            key="tab-anamnese"
+                            initial={{ opacity: 0, y: 10, scale: 0.99 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: -10, scale: 0.99 }}
+                            transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+                            className="space-y-8"
+                        >
+                            {/* Banner informativo */}
+                            <div className="flex items-start gap-4 p-5 bg-primary/10 border border-primary/20 rounded-2xl">
+                                <ClipboardList className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                                <div>
+                                    <p className="font-bold text-white text-sm">Ficha de Anamnese Inicial</p>
+                                    <p className="text-xs text-gray-400 mt-1">Preencha com atenção. Estas informações são usadas pelo seu treinador para personalizar 100% do seu programa de treino e acompanhamento.</p>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                {/* Dados Físicos Básicos */}
+                                <div className="bg-[#050505] border border-white/5 rounded-3xl p-8 space-y-6">
+                                    <h2 className="text-base font-bold text-white flex items-center gap-2">
+                                        <Activity className="w-4 h-4 text-primary" />
+                                        Dados Físicos
+                                    </h2>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Peso Atual (kg)</label>
+                                            <input
+                                                type="number"
+                                                value={anamnese.peso}
+                                                onChange={e => setAnamnese({...anamnese, peso: e.target.value})}
+                                                placeholder="Ex: 80.5"
+                                                className="w-full bg-black border border-white/5 rounded-xl p-3 text-white focus:outline-none focus:border-primary/40 text-sm"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Altura (m)</label>
+                                            <input
+                                                type="number"
+                                                value={anamnese.altura}
+                                                onChange={e => setAnamnese({...anamnese, altura: e.target.value})}
+                                                placeholder="Ex: 1.78"
+                                                className="w-full bg-black border border-white/5 rounded-xl p-3 text-white focus:outline-none focus:border-primary/40 text-sm"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Nível de Atividade Atual</label>
+                                        <select
+                                            value={anamnese.nivelAtividade}
+                                            onChange={e => setAnamnese({...anamnese, nivelAtividade: e.target.value})}
+                                            className="w-full bg-black border border-white/5 rounded-xl p-3 text-white focus:outline-none focus:border-primary/40 text-sm"
+                                        >
+                                            <option value="sedentario">Sedentário (0 treinos/semana)</option>
+                                            <option value="leve">Leve (1-2 treinos/semana)</option>
+                                            <option value="moderado">Moderado (3-4 treinos/semana)</option>
+                                            <option value="ativo">Ativo (5+ treinos/semana)</option>
+                                            <option value="atleta">Atleta de Alta Performance</option>
+                                        </select>
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Dias Disponíveis para Treinar</label>
+                                        <div className="flex flex-wrap gap-2">
+                                            {DIAS_SEMANA.map(dia => (
+                                                <button
+                                                    key={dia}
+                                                    onClick={() => toggleDia(dia)}
+                                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase transition-all border ${
+                                                        anamnese.diasDisponiveis.includes(dia)
+                                                            ? 'bg-primary text-black border-primary'
+                                                            : 'bg-white/5 text-gray-500 border-white/5 hover:border-white/20'
+                                                    }`}
+                                                >
+                                                    {dia.substring(0, 3)}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Objetivos e Limitações */}
+                                <div className="bg-[#050505] border border-white/5 rounded-3xl p-8 space-y-5">
+                                    <h2 className="text-base font-bold text-white flex items-center gap-2">
+                                        <Target className="w-4 h-4 text-primary" />
+                                        Objetivos e Limitações
+                                    </h2>
+
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Principal Objetivo</label>
+                                        <textarea
+                                            rows={3}
+                                            value={anamnese.objetivos}
+                                            onChange={e => setAnamnese({...anamnese, objetivos: e.target.value})}
+                                            placeholder="Ex: Hipertrofia com foco em pernas e glúteos. Perder gordura abdominal..."
+                                            className="w-full bg-black border border-white/5 rounded-xl p-3 text-white focus:outline-none focus:border-primary/40 text-sm resize-none"
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Dores e Intensidade</label>
+                                        <textarea
+                                            rows={2}
+                                            value={anamnese.doresIntensidade}
+                                            onChange={e => setAnamnese({...anamnese, doresIntensidade: e.target.value})}
+                                            placeholder="Ex: Dor lombar leve ao agachar. Joelho direito com desconforto..."
+                                            className="w-full bg-black border border-white/5 rounded-xl p-3 text-white focus:outline-none focus:border-primary/40 text-sm resize-none"
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Lesões ou Histórico de Saúde</label>
+                                        <textarea
+                                            rows={2}
+                                            value={anamnese.lesoes}
+                                            onChange={e => setAnamnese({...anamnese, lesoes: e.target.value})}
+                                            placeholder="Ex: Já tive hérnia de disco, cirurgia no ombro em 2022..."
+                                            className="w-full bg-black border border-white/5 rounded-xl p-3 text-white focus:outline-none focus:border-primary/40 text-sm resize-none"
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold text-red-500/80 uppercase tracking-widest flex items-center gap-1.5">
+                                            <AlertCircle className="w-3 h-3" /> Exercícios Proibidos / Restrições
+                                        </label>
+                                        <textarea
+                                            rows={2}
+                                            value={anamnese.exerciciosProibidos}
+                                            onChange={e => setAnamnese({...anamnese, exerciciosProibidos: e.target.value})}
+                                            placeholder="Ex: Agachamento livre, levantamento terra..."
+                                            className="w-full bg-red-950/20 border border-red-500/20 rounded-xl p-3 text-red-200 focus:outline-none focus:border-red-500/40 text-sm resize-none"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Pontos Fortes / Fracos e Métodos */}
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div className="bg-[#050505] border border-white/5 rounded-3xl p-8 space-y-4">
+                                    <h2 className="text-base font-bold text-white flex items-center gap-2">
+                                        <Dumbbell className="w-4 h-4 text-primary" />
+                                        Autoavaliação
+                                    </h2>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold text-green-500/80 uppercase tracking-widest">✅ Pontos Fortes</label>
+                                        <textarea
+                                            rows={2}
+                                            value={anamnese.pontosFortes}
+                                            onChange={e => setAnamnese({...anamnese, pontosFortes: e.target.value})}
+                                            placeholder="Ex: Boa força em puxadas, resistência aeróbia..."
+                                            className="w-full bg-black border border-white/5 rounded-xl p-3 text-white focus:outline-none focus:border-primary/40 text-sm resize-none"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold text-red-500/80 uppercase tracking-widest">⚠️ Pontos Fracos / A Melhorar</label>
+                                        <textarea
+                                            rows={2}
+                                            value={anamnese.pontosFracos}
+                                            onChange={e => setAnamnese({...anamnese, pontosFracos: e.target.value})}
+                                            placeholder="Ex: Baixa mobilidade de quadril, pouca força em tríceps..."
+                                            className="w-full bg-black border border-white/5 rounded-xl p-3 text-white focus:outline-none focus:border-primary/40 text-sm resize-none"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="bg-[#050505] border border-white/5 rounded-3xl p-8 space-y-4">
+                                    <h2 className="text-base font-bold text-white">Métodos de Treino que Já Usa</h2>
+                                    <p className="text-xs text-gray-500">Selecione os que você já conhece ou gosta:</p>
+                                    <div className="flex flex-wrap gap-2">
+                                        {METODOS_TREINO.map(metodo => (
+                                            <button
+                                                key={metodo}
+                                                onClick={() => toggleMetodo(metodo)}
+                                                className={`px-3 py-2 rounded-xl text-xs font-bold transition-all border ${
+                                                    anamnese.metodosUtilizados.includes(metodo)
+                                                        ? 'bg-primary text-black border-primary'
+                                                        : 'bg-white/5 text-gray-500 border-white/5 hover:border-white/20 hover:text-gray-300'
+                                                }`}
+                                            >
+                                                {metodo}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={handleSave}
+                                disabled={loading}
+                                className="w-full flex items-center justify-center gap-2 bg-primary text-black font-bold uppercase tracking-widest text-xs p-4 rounded-2xl hover:bg-primary/90 transition-all disabled:opacity-50"
+                            >
+                                {loading ? 'Salvando...' : '💾 Salvar Anamnese Completa'}
+                            </button>
+                        </motion.div>
+                    )}
+
                     {activeTab === 'perfil' && (
                         <motion.div
                             key="tab-perfil"

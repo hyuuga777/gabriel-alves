@@ -1,6 +1,19 @@
 {
   "users": [
     {
+      "id": "mock-1785728414967",
+      "name": "teste",
+      "email": "admin2@fitness.com",
+      "role": "ALUNO",
+      "assinatura": {
+        "status": "ATIVA",
+        "plano": {
+          "nome": "Plano Mock"
+        }
+      },
+      "treinoLogs": []
+    },
+    {
       "id": "std-1",
       "name": "Carlos Oliveira",
       "email": "carlos.oliver@gmail.com",

@@ -11,6 +11,7 @@ import {
     Ruler, 
     Camera, 
     Settings,
+    Target
 } from 'lucide-react';
 import Link from 'next/link';
 import { useState, useEffect, use } from 'react';
@@ -19,10 +20,14 @@ import { StatsTab } from '@/components/students/StatsTab';
 import { MeasurementsTab } from '@/components/students/MeasurementsTab';
 import { PhotosTab } from '@/components/students/PhotosTab';
 import { SettingsTab } from '@/components/students/SettingsTab';
+import { ProfileTab } from '@/components/students/ProfileTab';
+import { AssessmentsTab } from '@/components/students/AssessmentsTab';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 const TABS = [
+    { id: 'profile', label: 'Anamnese', icon: User },
+    { id: 'assessments', label: 'Testes', icon: Target },
     { id: 'workouts', label: 'Programas', icon: Dumbbell },
     { id: 'stats', label: 'Performance', icon: Activity },
     { id: 'measurements', label: 'Medidas', icon: Ruler },
@@ -148,21 +153,39 @@ export default function StudentProfile({ params }: { params: Promise<{ id: strin
             </div>
 
             {/* Tabs Navigation */}
-            <div className="flex items-center gap-1 bg-white/5 p-1.5 rounded-[2rem] border border-white/5 mb-12 overflow-x-auto no-scrollbar">
-                {TABS.map((tab) => (
-                    <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
-                        className={`flex items-center gap-2.5 px-6 py-4 rounded-[1.5rem] font-bold text-xs uppercase tracking-widest transition-all whitespace-nowrap ${
-                            activeTab === tab.id 
-                                ? 'bg-white text-black shadow-lg' 
-                                : 'text-gray-500 hover:text-white hover:bg-white/5'
-                        }`}
-                    >
-                        <tab.icon className={`w-4 h-4 ${activeTab === tab.id ? 'text-black' : 'text-gray-600'}`} />
-                        {tab.label}
-                    </button>
-                ))}
+            <div className="bg-white/5 border border-white/5 rounded-[2rem] p-2 mb-12">
+                <div className="grid grid-cols-4 gap-2">
+                    {TABS.slice(0, 4).map((tab) => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`flex items-center justify-center gap-2.5 px-4 py-4 rounded-[1.5rem] font-bold text-xs uppercase tracking-widest transition-all ${
+                                activeTab === tab.id 
+                                    ? 'bg-white text-black shadow-lg' 
+                                    : 'text-gray-500 hover:text-white hover:bg-white/5'
+                            }`}
+                        >
+                            <tab.icon className={`w-4 h-4 ${activeTab === tab.id ? 'text-black' : 'text-gray-600'}`} />
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
+                <div className="grid grid-cols-3 gap-2 mt-2">
+                    {TABS.slice(4).map((tab) => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`flex items-center justify-center gap-2.5 px-4 py-4 rounded-[1.5rem] font-bold text-xs uppercase tracking-widest transition-all ${
+                                activeTab === tab.id 
+                                    ? 'bg-white text-black shadow-lg' 
+                                    : 'text-gray-500 hover:text-white hover:bg-white/5'
+                            }`}
+                        >
+                            <tab.icon className={`w-4 h-4 ${activeTab === tab.id ? 'text-black' : 'text-gray-600'}`} />
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
             </div>
 
             {/* Main Content Area */}
@@ -175,6 +198,8 @@ export default function StudentProfile({ params }: { params: Promise<{ id: strin
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.2 }}
                     >
+                        {activeTab === 'profile' && <ProfileTab student={student} />}
+                        {activeTab === 'assessments' && <AssessmentsTab student={student} />}
                         {activeTab === 'workouts' && <WorkoutsTab student={student} />}
                         {activeTab === 'stats' && <StatsTab />}
                         {activeTab === 'measurements' && <MeasurementsTab />}

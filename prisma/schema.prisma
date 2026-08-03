@@ -58,6 +58,15 @@ model AlunoProfile {
   historicoSaude    String?
   nivelAtividade    String
   
+  // Anamnese Expandida (Planilha)
+  doresIntensidade  String?   @db.LongText
+  pontosFracos      String?   @db.LongText
+  pontosFortes      String?   @db.LongText
+  exerciciosProibidos String? @db.LongText
+  metodosUtilizados Json?     // Array de strings ex: ["Drop-set", "Excêntrico"]
+  diasDisponiveis   Json?     // Grade Semanal (Segunda a Domingo)
+  nivelTreinamentoPontuacao Int? // Score calculado da calculadora de Nível de Treinamento
+  
   // Status
   onboardingCompleto Boolean  @default(false)
   
@@ -263,9 +272,9 @@ model Avaliacao {
   assimetrias     Json?     // comparação bilateral
   
   // Performance
-  cooperTest      Float?    // distância em metros
-  forcaMaxima     Json?     // {supino: 80, agachamento: 120}
-  potenciaIso     Json?     // {direita: X, esquerda: Y}
+  testeAnaerobio  Json?     // { supino: { repeticoes, carga, rmEstimado }, ... }
+  testeAerobio    Json?     // { cooper: { distancia, vo2 }, incremental: { velInicial, estagios... } }
+  testeIsometria  Json?     // { pranchaFrontal: seg, pranchaLateralD: seg, ... }
   
   // Calculados automaticamente
   percentualGordura Float?

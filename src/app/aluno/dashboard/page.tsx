@@ -24,7 +24,8 @@ import {
   MessageSquare, 
   LogOut,
   Activity,
-  Weight
+  Weight,
+  ClipboardList
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useSession, signOut } from 'next-auth/react';
@@ -222,6 +223,30 @@ export default function AlunoDashboard() {
             );
           })}
         </div>
+
+        {/* ── Anamnese Onboarding Banner ── */}
+        <motion.div variants={item}>
+          <Link href="/aluno/perfil" className="block group">
+            <div className="relative overflow-hidden rounded-2xl p-5 border border-amber-500/30 cursor-pointer transition-all duration-300 group-hover:border-amber-500/60"
+              style={{ background: 'linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(245,158,11,0.04) 100%)' }}
+            >
+              <div className="absolute -bottom-8 -right-8 w-40 h-40 bg-amber-500 rounded-full opacity-10 blur-3xl group-hover:opacity-20 transition-opacity duration-500" />
+              <div className="flex items-center justify-between relative z-10 gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center shrink-0">
+                    <ClipboardList className="w-6 h-6 text-amber-400" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold text-amber-400 uppercase tracking-widest mb-0.5">⚡ Ação Necessária</p>
+                    <h2 className="text-base font-black text-white">Preencha sua Ficha de Anamnese</h2>
+                    <p className="text-xs text-gray-400 mt-0.5">Informe seus dados para que o treinador personalize seu programa.</p>
+                  </div>
+                </div>
+                <ChevronRight className="w-5 h-5 text-amber-400 group-hover:translate-x-1 transition-transform shrink-0" />
+              </div>
+            </div>
+          </Link>
+        </motion.div>
 
         {/* ── Próximo Treino Banner ── */}
         <motion.div variants={item}>
