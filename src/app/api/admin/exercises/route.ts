@@ -72,3 +72,77 @@ export async function POST(req: Request) {
         return new NextResponse("Internal Error", { status: 500 });
     }
 }
+
+export async function PUT(req: Request) {
+    try {
+        const body = await req.json();
+        const { id, nome, grupoMuscular, videoUrl } = body;
+
+        if (!id || !nome) {
+            return new NextResponse("ID and name are required", { status: 400 });
+        }
+
+        let updated;
+        try {
+            updated = await prisma.exercicio.update({
+                where: { id },
+                data: {
+                    nome,
+                    grupoMuscular: JSON.stringify(grupoMuscular || []),
+                    videoUrl: videoUrl || null,
+                }
+            });
+        } catch (dbError) {
+            console.error("[ADMIN_EXERCISES_PUT] Mocking due to DB Error", dbError);
+            const { getDb, saveDb } = await import("@/lib/localDb");
+            const db = getDb();
+            const index = db.exercises.findIndex((ex: any) => ex.id === id);
+            if (index !== -1) {
+                db.exercises[index] = {
+                    ...db.exercises[index],
+                    nome,
+                    grupoMuscular: grupoMuscular || [],
+                    videoUrl
+                };
+                saveDb(db);
+                updated = db.exercises[index];
+            } else {
+                updated = { id, nome, grupoMuscular, videoUrl };
+            }
+        }
+
+        return NextResponse.json(updated);
+    } catch (error) {
+        console.error("[ADMIN_EXERCISES_PUT]", error);
+        return new NextResponse("Internal Error", { status: 500 });
+    }
+}
+
+export async function DELETE(req: Request) {
+    try {
+        const { searchParams } = new URL(req.url);
+        const id = searchParams.get('id');
+
+        if (!id) {
+            return new NextResponse("ID parameter is required", { status: 400 });
+        }
+
+        try {
+            await prisma.exercicio.delete({
+                where: { id }
+            });
+        } catch (dbError) {
+            console.error("[ADMIN_EXERCISES_DELETE] Mocking due to DB Error", dbError);
+            const { getDb, saveDb } = await import("@/lib/localDb");
+            const db = getDb();
+            db.exercises = db.exercises.filter((ex: any) => ex.id !== id);
+            saveDb(db);
+        }
+
+        return NextResponse.json({ success: true, id });
+    } catch (error) {
+        console.error("[ADMIN_EXERCISES_DELETE]", error);
+        return new NextResponse("Internal Error", { status: 500 });
+    }
+}
+

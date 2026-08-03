@@ -144,22 +144,69 @@ export async function PUT(
     request: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
+    const { id } = await params;
+
+    // Helper: update user in localDb
+    const updateLocalDb = async (body: any) => {
+        const { name, email, status, treinoId, planoId, removeWorkout } = body;
+        const { getDb, saveDb } = await import("@/lib/localDb");
+        const db = getDb();
+        const userIndex = db.users?.findIndex((u: any) => u.id === id);
+
+        if (userIndex !== undefined && userIndex !== -1 && db.users) {
+            if (name) db.users[userIndex].name = name;
+            if (email) db.users[userIndex].email = email;
+            if (status) db.users[userIndex].status = status;
+
+            if (removeWorkout || treinoId === null || treinoId === "") {
+                db.users[userIndex].atribuicoes = [];
+            } else if (treinoId) {
+                const workout = db.workouts?.find((w: any) => w.id === treinoId) || { nome: "Treino Personalizado", titulo: "Treino Personalizado" };
+                db.users[userIndex].atribuicoes = [{
+                    id: "mock-atrib-" + Date.now(),
+                    treinoId,
+                    alunoId: id,
+                    ativo: true,
+                    createdAt: new Date().toISOString(),
+                    treino: {
+                        id: treinoId,
+                        nome: workout.nome || workout.titulo,
+                        descricao: workout.descricao || "Treino personalizado",
+                        exercicios: Array.isArray(workout.exercicios) ? workout.exercicios : Array(workout.exercicios || 3).fill({ exercicio: { nome: "Exercício" } })
+                    }
+                }];
+            }
+
+            if (planoId) {
+                const plano = db.plans?.find((p: any) => p.id === planoId) || { nome: "Plano Especial" };
+                db.users[userIndex].assinatura = {
+                    status: status || db.users[userIndex].assinatura?.status || "ATIVA",
+                    plano: { nome: plano.nome }
+                };
+            }
+
+            saveDb(db);
+            return NextResponse.json({ message: "Updated in localDb", user: db.users[userIndex] });
+        }
+        return null;
+    };
+
     try {
         const session = await auth();
         if (!session?.user || session.user.role !== "ADMIN") {
             return new NextResponse("Unauthorized", { status: 401 });
         }
 
-        const { id } = await params;
-
-        if (id.startsWith('mock-')) {
-            return NextResponse.json({ message: "Mock updated" });
+        // Handle local mock IDs (mock- or std-) via localDb
+        if (id.startsWith('mock-') || id.startsWith('std-')) {
+            const body = await request.json();
+            const result = await updateLocalDb(body);
+            return result ?? NextResponse.json({ message: "User not found in localDb" }, { status: 404 });
         }
 
         const body = await request.json();
-        const { name, email, status, treinoId, planoId } = body;
+        const { name, email, status, treinoId, planoId, removeWorkout } = body;
 
-        // Atualizar Nome e E-mail se fornecidos
         if (name || email) {
             await prisma.user.update({
                 where: { id },
@@ -170,7 +217,6 @@ export async function PUT(
             });
         }
 
-        // Atualizar Status da Assinatura se fornecido
         if (status) {
             await prisma.assinatura.update({
                 where: { userId: id },
@@ -178,53 +224,32 @@ export async function PUT(
             });
         }
 
-        // Atualizar Plano se fornecido
         if (planoId) {
-            const plano = await prisma.plano.findUnique({
-                where: { id: planoId }
-            });
-
+            const plano = await prisma.plano.findUnique({ where: { id: planoId } });
             if (plano) {
                 const dataInicio = new Date();
                 const dataFim = new Date();
-
-                const meses = Number(plano.intervalo || 1);
-                dataFim.setMonth(dataFim.getMonth() + meses);
-
+                dataFim.setMonth(dataFim.getMonth() + Number(plano.intervalo || 1));
                 await prisma.assinatura.upsert({
                     where: { userId: id },
-                    create: {
-                        userId: id,
-                        planoId: plano.id,
-                        status: status || 'ATIVA',
-                        dataInicio,
-                        dataFim
-                    },
-                    update: {
-                        planoId: plano.id,
-                        status: status || 'ATIVA',
-                        dataFim
-                    }
+                    create: { userId: id, planoId: plano.id, status: status || 'ATIVA', dataInicio, dataFim },
+                    update: { planoId: plano.id, status: status || 'ATIVA', dataFim }
                 });
             }
         }
 
-        // Example update logic for assigning workout
+        if (removeWorkout || treinoId === null || treinoId === "") {
+            await prisma.atribuicaoTreino.deleteMany({ where: { alunoId: id } });
+            return NextResponse.json({ message: "Workout assignment removed" });
+        }
+
         if (treinoId) {
-            // Deactivate current assignments
             await prisma.atribuicaoTreino.updateMany({
                 where: { alunoId: id, ativo: true },
                 data: { ativo: false }
             });
-
-            // Create new assignment
             const assignment = await prisma.atribuicaoTreino.create({
-                data: {
-                    alunoId: id,
-                    treinoId,
-                    ativo: true,
-                    diasSemana: "[]"
-                }
+                data: { alunoId: id, treinoId, ativo: true, diasSemana: "[]" }
             });
             return NextResponse.json({ message: "Updated workout and plan", ...assignment });
         }
@@ -233,6 +258,71 @@ export async function PUT(
 
     } catch (error) {
         console.error("Error updating user:", error);
+
+        // Fallback: try localDb
+        try {
+            const body = await request.json();
+            const result = await updateLocalDb(body);
+            if (result) return result;
+        } catch (mockError) {
+            console.error("Error updating mock user in localDb:", mockError);
+        }
+
         return new NextResponse("Internal Server Error", { status: 500 });
     }
 }
+
+export async function DELETE(
+    request: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    const { id } = await params;
+
+    try {
+        const session = await auth();
+        if (!session?.user || session.user.role !== "ADMIN") {
+            return new NextResponse("Unauthorized", { status: 401 });
+        }
+
+        // Handle local/mock IDs
+        if (id.startsWith('mock-') || id.startsWith('std-')) {
+            const { getDb, saveDb } = await import("@/lib/localDb");
+            const db = getDb();
+            const before = db.users?.length ?? 0;
+            db.users = (db.users ?? []).filter((u: any) => u.id !== id);
+            if (db.users.length < before) {
+                saveDb(db);
+                return NextResponse.json({ message: "User deleted from localDb" });
+            }
+            return NextResponse.json({ message: "User not found in localDb" }, { status: 404 });
+        }
+
+        // Real DB deletion: delete related records first
+        await prisma.atribuicaoTreino.deleteMany({ where: { alunoId: id } });
+        await prisma.assinatura.deleteMany({ where: { userId: id } });
+        await prisma.user.delete({ where: { id } });
+
+        return NextResponse.json({ message: "User permanently deleted" });
+
+    } catch (error) {
+        console.error("Error deleting user:", error);
+
+        // Fallback: try localDb delete
+        try {
+            const { getDb, saveDb } = await import("@/lib/localDb");
+            const db = getDb();
+            const before = db.users?.length ?? 0;
+            db.users = (db.users ?? []).filter((u: any) => u.id !== id);
+            if (db.users.length < before) {
+                saveDb(db);
+                return NextResponse.json({ message: "User deleted from localDb (fallback)" });
+            }
+        } catch (mockError) {
+            console.error("Error deleting from localDb:", mockError);
+        }
+
+        return new NextResponse("Internal Server Error", { status: 500 });
+    }
+}
+
+

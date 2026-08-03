@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Dumbbell, Clock, ChevronDown, ChevronUp, Plus, Calendar, Zap } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 interface WorkoutsTabProps {
@@ -11,11 +11,79 @@ interface WorkoutsTabProps {
 
 export function WorkoutsTab({ student }: WorkoutsTabProps) {
     const [expandedRoutineId, setExpandedRoutineId] = useState<string | null>(null);
+    const [allWorkouts, setAllWorkouts] = useState<any[]>([]);
+    const [isAssigning, setIsAssigning] = useState(false);
+    const [selectedWorkoutId, setSelectedWorkoutId] = useState<string>('');
+    const [isEditMode, setIsEditMode] = useState(false);
 
     const atribuicoes = student?.atribuicoes || [];
 
+    useEffect(() => {
+        const fetchAllWorkouts = async () => {
+            try {
+                const res = await fetch('/api/admin/workouts');
+                if (res.ok) {
+                    const data = await res.json();
+                    setAllWorkouts(data);
+                }
+            } catch (e) {
+                console.error("Error fetching general workouts:", e);
+            }
+        };
+        fetchAllWorkouts();
+    }, []);
+
     const handleToggleExpand = (id: string) => {
         setExpandedRoutineId(expandedRoutineId === id ? null : id);
+    };
+
+    const handleAssignWorkout = async () => {
+        if (!selectedWorkoutId || !student?.id) return;
+        setIsAssigning(true);
+        try {
+            const res = await fetch(`/api/admin/users/${student.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    treinoId: selectedWorkoutId
+                })
+            });
+            if (res.ok) {
+                window.location.reload();
+            } else {
+                alert('Erro ao atribuir treino.');
+            }
+        } catch (e) {
+            console.error(e);
+            alert('Erro ao atribuir treino.');
+        } finally {
+            setIsAssigning(false);
+        }
+    };
+
+    const handleRemoveWorkout = async () => {
+        if (!student?.id) return;
+        if (!confirm('Deseja realmente remover o treino deste aluno?')) return;
+        setIsAssigning(true);
+        try {
+            const res = await fetch(`/api/admin/users/${student.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    removeWorkout: true
+                })
+            });
+            if (res.ok) {
+                window.location.reload();
+            } else {
+                alert('Erro ao remover treino.');
+            }
+        } catch (e) {
+            console.error(e);
+            alert('Erro ao remover treino.');
+        } finally {
+            setIsAssigning(false);
+        }
     };
 
     if (atribuicoes.length === 0) {
@@ -28,12 +96,35 @@ export function WorkoutsTab({ student }: WorkoutsTabProps) {
                 <p className="text-gray-400 max-w-sm mx-auto mb-8 text-sm leading-relaxed">
                     Este aluno ainda não possui fichas de treinos associadas ao seu perfil.
                 </p>
-                <Link 
-                    href="/admin/treinos/novo"
-                    className="inline-flex items-center gap-2 bg-primary text-black font-bold px-6 py-3.5 rounded-xl hover:bg-primary/90 transition-all shadow-lg hover:scale-[1.02]"
-                >
-                    <Plus className="w-4 h-4" /> Montar Novo Treino
-                </Link>
+                
+                <div className="flex flex-col items-center gap-4 w-full max-w-sm mx-auto">
+                    <div className="flex gap-3 w-full">
+                        <select
+                            value={selectedWorkoutId}
+                            onChange={(e) => setSelectedWorkoutId(e.target.value)}
+                            className="flex-1 bg-[#151515] border border-white/10 rounded-xl h-12 px-4 text-white focus:outline-none focus:border-primary/50 text-sm cursor-pointer"
+                        >
+                            <option value="">Selecionar treino existente...</option>
+                            {allWorkouts.map((w: any) => (
+                                <option key={w.id} value={w.id}>{w.titulo}</option>
+                            ))}
+                        </select>
+                        <button
+                            onClick={handleAssignWorkout}
+                            disabled={!selectedWorkoutId || isAssigning}
+                            className="bg-primary text-black font-bold px-6 h-12 rounded-xl hover:bg-primary/90 transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                        >
+                            {isAssigning ? 'Atribuindo...' : 'Atribuir'}
+                        </button>
+                    </div>
+                    <div className="text-gray-600 text-[10px] font-black uppercase tracking-wider my-1">OU</div>
+                    <Link 
+                        href="/admin/treinos/novo"
+                        className="inline-flex items-center justify-center gap-2 bg-white/5 border border-white/10 text-white font-bold px-6 py-3.5 rounded-xl hover:bg-white/10 transition-all w-full text-sm hover:scale-[1.02]"
+                    >
+                        <Plus className="w-4 h-4" /> Criar Novo Treino Geral
+                    </Link>
+                </div>
             </div>
         );
     }
@@ -72,6 +163,30 @@ export function WorkoutsTab({ student }: WorkoutsTabProps) {
                 animate={{ y: 0, opacity: 1 }}
                 className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#111] to-[#0a0a0a] border border-white/10 p-8 md:p-10 group"
             >
+                {/* Actions (Alterar / Remover) */}
+                <div className="absolute top-6 right-6 z-20 flex gap-2">
+                    {!isEditMode && (
+                        <>
+                            <button
+                                onClick={() => {
+                                    setIsEditMode(true);
+                                    setSelectedWorkoutId(activeWorkout?.id || '');
+                                }}
+                                className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-bold text-gray-300 transition-all cursor-pointer"
+                            >
+                                Alterar Treino
+                            </button>
+                            <button
+                                onClick={handleRemoveWorkout}
+                                disabled={isAssigning}
+                                className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-xl text-xs font-bold text-red-400 transition-all cursor-pointer"
+                            >
+                                {isAssigning ? 'Removendo...' : 'Remover Treino'}
+                            </button>
+                        </>
+                    )}
+                </div>
+
                 <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-700">
                     <Dumbbell size={120} className="text-primary" />
                 </div>
@@ -87,13 +202,49 @@ export function WorkoutsTab({ student }: WorkoutsTabProps) {
                         </span>
                     </div>
 
-                    <h2 className="text-3xl md:text-4xl font-black text-white mb-4 tracking-tighter leading-none">
-                        {activeWorkout?.nome}
-                    </h2>
-                    
-                    <p className="text-gray-400 text-lg mb-8 leading-relaxed">
-                        {activeWorkout?.descricao || 'Programa de treinamento personalizado montado para o aluno atingir seus objetivos com máximo rendimento.'}
-                    </p>
+                    {isEditMode ? (
+                        <div className="mb-6 space-y-4">
+                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Alterar treino do aluno</label>
+                            <div className="flex gap-3 max-w-md">
+                                <select
+                                    value={selectedWorkoutId}
+                                    onChange={(e) => setSelectedWorkoutId(e.target.value)}
+                                    className="flex-1 bg-black/40 border border-white/10 rounded-xl h-11 px-3 text-white focus:outline-none focus:border-primary/50 text-sm cursor-pointer"
+                                >
+                                    <option value="">Selecionar novo treino...</option>
+                                    {allWorkouts.map((w: any) => (
+                                        <option key={w.id} value={w.id}>{w.titulo}</option>
+                                    ))}
+                                </select>
+                                <button
+                                    onClick={handleAssignWorkout}
+                                    disabled={!selectedWorkoutId || isAssigning}
+                                    className="bg-primary text-black font-bold px-4 py-2.5 rounded-xl hover:bg-primary/90 transition-all text-sm disabled:opacity-50 cursor-pointer"
+                                >
+                                    {isAssigning ? 'Salvando...' : 'Salvar'}
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setIsEditMode(false);
+                                        setSelectedWorkoutId('');
+                                    }}
+                                    className="bg-white/5 border border-white/10 text-gray-400 font-bold px-4 py-2.5 rounded-xl hover:bg-white/10 transition-all text-sm cursor-pointer"
+                                >
+                                    Cancelar
+                                </button>
+                            </div>
+                        </div>
+                    ) : (
+                        <>
+                            <h2 className="text-3xl md:text-4xl font-black text-white mb-4 tracking-tighter leading-none">
+                                {activeWorkout?.nome}
+                            </h2>
+                            
+                            <p className="text-gray-400 text-lg mb-8 leading-relaxed">
+                                {activeWorkout?.descricao || 'Programa de treinamento personalizado montado para o aluno atingir seus objetivos com máximo rendimento.'}
+                            </p>
+                        </>
+                    )}
 
                     <div className="flex flex-wrap items-center gap-8">
                         <div>

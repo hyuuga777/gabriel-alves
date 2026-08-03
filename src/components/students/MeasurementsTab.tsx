@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Ruler, TrendingDown, TrendingUp, Calendar, Plus, ChevronRight, Scale, Info, X } from 'lucide-react';
 import { 
@@ -24,9 +25,183 @@ const MEASUREMENT_HISTORY = [
 export function MeasurementsTab() {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const Portals = () => {
+        if (!mounted) return null;
+        return createPortal(
+            <>
+                {/* Modal de Adicionar Medida */}
+                <AnimatePresence>
+                    {isAddModalOpen && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+                            onClick={(e) => { if (e.target === e.currentTarget) setIsAddModalOpen(false); }}
+                        >
+                            <motion.div
+                                initial={{ scale: 0.95, y: 10 }}
+                                animate={{ scale: 1, y: 0 }}
+                                exit={{ scale: 0.95, y: 10 }}
+                                className="bg-[#111111] border border-white/10 rounded-[2rem] w-full max-w-md overflow-hidden shadow-2xl"
+                            >
+                                <div className="p-6 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
+                                    <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                                        <Plus className="w-5 h-5 text-primary" />
+                                        Nova Medida
+                                    </h2>
+                                    <button onClick={() => setIsAddModalOpen(false)} className="text-gray-400 hover:text-white transition-colors">
+                                        <X className="w-6 h-6" />
+                                    </button>
+                                </div>
+                                <div className="p-6 space-y-4">
+                                    <div>
+                                        <label className="block text-[10px] uppercase font-bold tracking-widest text-gray-500 mb-2">Parte do Corpo</label>
+                                        <select className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary outline-none appearance-none">
+                                            <option>Braço (Contraído)</option>
+                                            <option>Tórax (Peitoral)</option>
+                                            <option>Abdomen (Cintura)</option>
+                                            <option>Coxa</option>
+                                            <option>Panturrilha</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] uppercase font-bold tracking-widest text-gray-500 mb-2">Valor (cm)</label>
+                                        <input
+                                            type="number"
+                                            placeholder="0.0"
+                                            step="0.1"
+                                            className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:border-primary outline-none"
+                                        />
+                                    </div>
+                                    <button
+                                        onClick={() => setIsAddModalOpen(false)}
+                                        className="w-full bg-primary text-black font-black uppercase tracking-widest text-xs py-4 rounded-xl hover:bg-primary/90 transition-colors mt-4"
+                                    >
+                                        Salvar Medida
+                                    </button>
+                                </div>
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                {/* Modal Histórico Completo */}
+                <AnimatePresence>
+                    {isHistoryModalOpen && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+                            onClick={(e) => { if (e.target === e.currentTarget) setIsHistoryModalOpen(false); }}
+                        >
+                            <motion.div
+                                initial={{ scale: 0.95, y: 20 }}
+                                animate={{ scale: 1, y: 0 }}
+                                exit={{ scale: 0.95, y: 20 }}
+                                className="bg-[#111111] border border-white/10 rounded-[2rem] w-full max-w-2xl overflow-hidden shadow-2xl max-h-[85vh] flex flex-col"
+                            >
+                                <div className="p-6 border-b border-white/5 flex justify-between items-center bg-white/[0.02] flex-shrink-0">
+                                    <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                                        <Ruler className="w-5 h-5 text-primary" />
+                                        Histórico Completo de Medidas
+                                    </h2>
+                                    <button onClick={() => setIsHistoryModalOpen(false)} className="text-gray-400 hover:text-white transition-colors">
+                                        <X className="w-6 h-6" />
+                                    </button>
+                                </div>
+                                <div className="flex-1 overflow-y-auto p-6">
+                                    <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Composição Corporal</p>
+                                    <div className="overflow-x-auto rounded-2xl border border-white/5">
+                                        <table className="w-full text-sm">
+                                            <thead>
+                                                <tr className="bg-white/[0.03] border-b border-white/5">
+                                                    <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-widest text-gray-500">Mês</th>
+                                                    <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-widest text-gray-500">Peso</th>
+                                                    <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-widest text-gray-500">% Gordura</th>
+                                                    <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-widest text-gray-500">Massa Magra</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-white/5">
+                                                {MEASUREMENT_HISTORY.map((row, i) => (
+                                                    <tr key={i} className="hover:bg-white/[0.02] transition-colors">
+                                                        <td className="px-5 py-4 font-bold text-white">{row.date}</td>
+                                                        <td className="px-5 py-4 text-gray-300">{row.weight} kg</td>
+                                                        <td className="px-5 py-4">
+                                                            <span className="px-2 py-0.5 rounded-lg bg-red-500/10 text-red-400 text-xs font-bold">{row.fat}%</span>
+                                                        </td>
+                                                        <td className="px-5 py-4">
+                                                            <span className="px-2 py-0.5 rounded-lg bg-blue-500/10 text-blue-400 text-xs font-bold">{row.muscle} kg</span>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mt-8 mb-4">Circunferências</p>
+                                    <div className="overflow-x-auto rounded-2xl border border-white/5">
+                                        <table className="w-full text-sm">
+                                            <thead>
+                                                <tr className="bg-white/[0.03] border-b border-white/5">
+                                                    <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-widest text-gray-500">Medida</th>
+                                                    <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-widest text-gray-500">Valor Atual</th>
+                                                    <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-widest text-gray-500">Variação</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-white/5">
+                                                {[
+                                                    { label: 'Braço Contraído', value: '42.5', unit: 'cm', change: '+0.5' },
+                                                    { label: 'Tórax (Peitoral)', value: '112.0', unit: 'cm', change: '+2.0' },
+                                                    { label: 'Abdomen (Cintura)', value: '84.5', unit: 'cm', change: '-1.5' },
+                                                    { label: 'Coxa (Fêmur)', value: '65.2', unit: 'cm', change: '+1.2' },
+                                                    { label: 'Panturrilha', value: '41.0', unit: 'cm', change: '0.0' },
+                                                ].map((item, i) => (
+                                                    <tr key={i} className="hover:bg-white/[0.02] transition-colors">
+                                                        <td className="px-5 py-4 font-bold text-white">{item.label}</td>
+                                                        <td className="px-5 py-4 text-gray-300">{item.value} {item.unit}</td>
+                                                        <td className="px-5 py-4">
+                                                            <span className={`px-2 py-0.5 rounded-lg text-xs font-bold ${
+                                                                item.change.startsWith('-')
+                                                                    ? 'bg-green-500/10 text-green-400'
+                                                                    : item.change === '0.0'
+                                                                        ? 'bg-gray-500/10 text-gray-400'
+                                                                        : 'bg-primary/10 text-primary'
+                                                            }`}>{item.change} {item.unit}</span>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div className="p-4 border-t border-white/5 bg-white/[0.02] flex-shrink-0">
+                                    <button
+                                        onClick={() => setIsHistoryModalOpen(false)}
+                                        className="w-full py-3 bg-white/5 hover:bg-white/10 text-gray-300 font-bold rounded-xl transition-colors text-sm"
+                                    >
+                                        Fechar
+                                    </button>
+                                </div>
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </>,
+            document.body
+        );
+    };
 
     return (
         <div className="space-y-8">
+            <Portals />
             {/* Main Stats Header */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {[
@@ -179,168 +354,7 @@ export function MeasurementsTab() {
                     </div>
                 </div>
             </div>
-
-            {/* Modal de Adicionar Medida */}
-            <AnimatePresence>
-                {isAddModalOpen && (
-                    <motion.div 
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
-                    >
-                        <motion.div 
-                            initial={{ scale: 0.95 }}
-                            animate={{ scale: 1 }}
-                            exit={{ scale: 0.95 }}
-                            className="bg-[#111111] border border-white/10 rounded-[2rem] w-full max-w-md overflow-hidden shadow-2xl"
-                        >
-                            <div className="p-6 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
-                                <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                                    <Plus className="w-5 h-5 text-primary" />
-                                    Nova Medida
-                                </h2>
-                                <button onClick={() => setIsAddModalOpen(false)} className="text-gray-400 hover:text-white transition-colors">
-                                    <X className="w-6 h-6" />
-                                </button>
-                            </div>
-                            <div className="p-6 space-y-4">
-                                <div>
-                                    <label className="block text-[10px] uppercase font-bold tracking-widest text-gray-500 mb-2">Parte do Corpo</label>
-                                    <select className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary outline-none appearance-none">
-                                        <option>Braço (Contraído)</option>
-                                        <option>Tórax (Peitoral)</option>
-                                        <option>Abdomen (Cintura)</option>
-                                        <option>Coxa</option>
-                                        <option>Panturrilha</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-[10px] uppercase font-bold tracking-widest text-gray-500 mb-2">Valor (cm)</label>
-                                    <input
-                                        type="number"
-                                        placeholder="0.0"
-                                        step="0.1"
-                                        className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:border-primary outline-none"
-                                    />
-                                </div>
-                                <button
-                                    onClick={() => {
-                                        setIsAddModalOpen(false);
-                                        alert('Medida salva (visualmente persistida em breve)!');
-                                    }}
-                                    className="w-full bg-primary text-black font-black uppercase tracking-widest text-xs py-4 rounded-xl hover:bg-primary/90 transition-colors mt-4"
-                                >
-                                    Salvar Medida
-                                </button>
-                            </div>
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-            {/* Modal Histórico Completo */}
-            <AnimatePresence>
-                {isHistoryModalOpen && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
-                    >
-                        <motion.div
-                            initial={{ scale: 0.95, y: 20 }}
-                            animate={{ scale: 1, y: 0 }}
-                            exit={{ scale: 0.95, y: 20 }}
-                            className="bg-[#111111] border border-white/10 rounded-[2rem] w-full max-w-2xl overflow-hidden shadow-2xl max-h-[80vh] flex flex-col"
-                        >
-                            <div className="p-6 border-b border-white/5 flex justify-between items-center bg-white/[0.02] flex-shrink-0">
-                                <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                                    <Ruler className="w-5 h-5 text-primary" />
-                                    Histórico Completo de Medidas
-                                </h2>
-                                <button onClick={() => setIsHistoryModalOpen(false)} className="text-gray-400 hover:text-white transition-colors">
-                                    <X className="w-6 h-6" />
-                                </button>
-                            </div>
-                            <div className="flex-1 overflow-y-auto p-6">
-                                {/* Circunferências por mês */}
-                                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Composição Corporal</p>
-                                <div className="overflow-x-auto rounded-2xl border border-white/5">
-                                    <table className="w-full text-sm">
-                                        <thead>
-                                            <tr className="bg-white/[0.03] border-b border-white/5">
-                                                <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-widest text-gray-500">Mês</th>
-                                                <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-widest text-gray-500">Peso</th>
-                                                <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-widest text-gray-500">% Gordura</th>
-                                                <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-widest text-gray-500">Massa Magra</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-white/5">
-                                            {MEASUREMENT_HISTORY.map((row, i) => (
-                                                <tr key={i} className="hover:bg-white/[0.02] transition-colors">
-                                                    <td className="px-5 py-4 font-bold text-white">{row.date}</td>
-                                                    <td className="px-5 py-4 text-gray-300">{row.weight} kg</td>
-                                                    <td className="px-5 py-4">
-                                                        <span className="px-2 py-0.5 rounded-lg bg-red-500/10 text-red-400 text-xs font-bold">{row.fat}%</span>
-                                                    </td>
-                                                    <td className="px-5 py-4">
-                                                        <span className="px-2 py-0.5 rounded-lg bg-blue-500/10 text-blue-400 text-xs font-bold">{row.muscle} kg</span>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                                {/* Circunferências */}
-                                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mt-8 mb-4">Circunferências</p>
-                                <div className="overflow-x-auto rounded-2xl border border-white/5">
-                                    <table className="w-full text-sm">
-                                        <thead>
-                                            <tr className="bg-white/[0.03] border-b border-white/5">
-                                                <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-widest text-gray-500">Medida</th>
-                                                <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-widest text-gray-500">Valor Atual</th>
-                                                <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-widest text-gray-500">Variação</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-white/5">
-                                            {[
-                                                { label: 'Braço Contraído', value: '42.5', unit: 'cm', change: '+0.5' },
-                                                { label: 'Tórax (Peitoral)', value: '112.0', unit: 'cm', change: '+2.0' },
-                                                { label: 'Abdomen (Cintura)', value: '84.5', unit: 'cm', change: '-1.5' },
-                                                { label: 'Coxa (Fêmur)', value: '65.2', unit: 'cm', change: '+1.2' },
-                                                { label: 'Panturrilha', value: '41.0', unit: 'cm', change: '0.0' },
-                                            ].map((item, i) => (
-                                                <tr key={i} className="hover:bg-white/[0.02] transition-colors">
-                                                    <td className="px-5 py-4 font-bold text-white">{item.label}</td>
-                                                    <td className="px-5 py-4 text-gray-300">{item.value} {item.unit}</td>
-                                                    <td className="px-5 py-4">
-                                                        <span className={`px-2 py-0.5 rounded-lg text-xs font-bold ${
-                                                            item.change.startsWith('-') 
-                                                                ? 'bg-green-500/10 text-green-400' 
-                                                                : item.change === '0.0' 
-                                                                    ? 'bg-gray-500/10 text-gray-400' 
-                                                                    : 'bg-primary/10 text-primary'
-                                                        }`}>{item.change} {item.unit}</span>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <div className="p-4 border-t border-white/5 bg-white/[0.02] flex-shrink-0">
-                                <button
-                                    onClick={() => setIsHistoryModalOpen(false)}
-                                    className="w-full py-3 bg-white/5 hover:bg-white/10 text-gray-300 font-bold rounded-xl transition-colors text-sm"
-                                >
-                                    Fechar
-                                </button>
-                            </div>
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
         </div>
     );
 }
+

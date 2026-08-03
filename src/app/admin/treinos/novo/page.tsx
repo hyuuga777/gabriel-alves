@@ -19,7 +19,6 @@ import { z } from 'zod';
 
 const WorkoutBuilderSchema = z.object({
     titulo: z.string().min(3, 'O título deve ter pelo menos 3 caracteres'),
-    alunoId: z.string().min(1, 'Selecione um aluno para este treino'),
     itens: z.array(z.object({
         exercicioId: z.string().min(1),
         nome: z.string(),
@@ -58,7 +57,6 @@ export default function AdminNewWorkoutPage() {
         resolver: zodResolver(WorkoutBuilderSchema),
         defaultValues: {
             titulo: '',
-            alunoId: 'default',
             itens: []
         }
     });
@@ -103,7 +101,7 @@ export default function AdminNewWorkoutPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     nome: data.titulo,
-                    alunoId: data.alunoId,
+                    alunoId: 'default',
                     descricao: 'Treino personalizado',
                     tipo: 'Geral',
                     exercises: data.itens.map(item => ({
@@ -150,27 +148,13 @@ export default function AdminNewWorkoutPage() {
                 </button>
                 <div>
                     <h1 className="text-3xl font-bold text-white tracking-tight">Novo Treino</h1>
-                    <p className="text-gray-400 text-sm mt-1">Monte uma ficha personalizada para seu aluno.</p>
+                    <p className="text-gray-400 text-sm mt-1">Monte uma ficha de treino geral (template) que poderá ser atribuída aos seus alunos.</p>
                 </div>
             </header>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
                 {/* Configuração Inicial */}
                 <div className="p-6 bg-[#111] border border-white/5 rounded-2xl shadow-xl space-y-6">
-                    <div className="space-y-2">
-                        <label className="text-xs font-bold text-gray-400 uppercase tracking-widest text-white/70 ml-1">Para qual aluno?</label>
-                        <select
-                            {...register('alunoId')}
-                            className="w-full bg-black/50 border border-white/10 rounded-xl h-12 px-4 text-white focus:outline-none focus:border-primary/50"
-                        >
-                            <option value="default">Padrão / Geral</option>
-                            {alunos.map(aluno => (
-                                <option key={aluno.id} value={aluno.id}>{aluno.name}</option>
-                            ))}
-                        </select>
-                        {errors.alunoId && <p className="text-red-400 text-xs ml-1">{errors.alunoId.message}</p>}
-                    </div>
-
                     <div className="space-y-2">
                         <label className="text-xs font-bold text-gray-400 uppercase tracking-widest text-white/70 ml-1">Título do Treino</label>
                         <input

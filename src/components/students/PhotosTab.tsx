@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Camera, Image as ImageIcon, Calendar, Filter, Maximize2, Trash2, Layout, Plus } from 'lucide-react';
+import { Camera, Image as ImageIcon, Calendar, Filter, Maximize2, Trash2, Layout, Plus, X } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 
 const PROGRESS_PHOTOS = [
@@ -16,7 +16,33 @@ const PROGRESS_PHOTOS = [
 export function PhotosTab() {
     const [selectedPhotos, setSelectedPhotos] = useState<string[]>([]);
     const [photos, setPhotos] = useState(PROGRESS_PHOTOS);
+    const [isCompareOpen, setIsCompareOpen] = useState(false);
+    const [zoomedPhoto, setZoomedPhoto] = useState<any | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const parsePhotoDate = (dateStr: string): number => {
+        if (dateStr === 'Hoje' || dateStr.toLowerCase().includes('hoje')) {
+            return Date.now();
+        }
+        const months: { [key: string]: number } = {
+            jan: 0, fev: 1, mar: 2, abr: 3, mai: 4, jun: 5,
+            jul: 6, ago: 7, set: 8, out: 9, nov: 10, dez: 11
+        };
+        
+        const cleanStr = dateStr.toLowerCase().replace(',', '');
+        const parts = cleanStr.split(' ');
+        if (parts.length === 3) {
+            const day = parseInt(parts[0], 10);
+            const month = months[parts[1]] !== undefined ? months[parts[1]] : 0;
+            const year = parseInt(parts[2], 10);
+            return new Date(year, month, day).getTime();
+        }
+        return 0;
+    };
+
+    const selectedPhotoObjects = photos
+        .filter(p => selectedPhotos.includes(p.id))
+        .sort((a, b) => parsePhotoDate(a.date) - parsePhotoDate(b.date));
 
     useEffect(() => {
         const savedPhotos = localStorage.getItem('evolution_photos_mock-1');
@@ -99,7 +125,8 @@ export function PhotosTab() {
                         <motion.button 
                             initial={{ scale: 0.9, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
-                            className="bg-primary text-black px-6 py-3 rounded-2xl font-bold flex items-center gap-2 shadow-lg shadow-primary/20 active:scale-95"
+                            onClick={() => setIsCompareOpen(true)}
+                            className="bg-primary text-black px-6 py-3 rounded-2xl font-bold flex items-center gap-2 shadow-lg shadow-primary/20 active:scale-95 cursor-pointer"
                         >
                             <Layout className="w-5 h-5" />
                             Comparar Agora
@@ -143,7 +170,13 @@ export function PhotosTab() {
                                         <p className="text-primary text-[10px] font-bold">{photo.weight}</p>
                                     </div>
                                     <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button className="p-1.5 bg-white/10 rounded-lg text-white hover:bg-white/20">
+                                        <button 
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setZoomedPhoto(photo);
+                                            }}
+                                            className="p-1.5 bg-white/10 rounded-lg text-white hover:bg-white/20 transition-colors"
+                                        >
                                             <Maximize2 className="w-3.5 h-3.5" />
                                         </button>
                                         <button 
@@ -187,6 +220,106 @@ export function PhotosTab() {
                     <span className="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em]">Adicionar</span>
                 </motion.div>
             </div>
+
+            {/* Modal de Comparação */}
+            {isCompareOpen && selectedPhotoObjects.length === 2 && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm">
+                    <div className="relative w-full max-w-5xl bg-zinc-950 rounded-3xl border border-white/10 overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+                        {/* Header */}
+                        <div className="flex justify-between items-center px-8 py-6 border-b border-white/5">
+                            <div>
+                                <h3 className="text-xl font-black text-white tracking-tight flex items-center gap-2">
+                                    <Layout className="w-5 h-5 text-primary" />
+                                    Comparação de Evolução
+                                </h3>
+                                <p className="text-xs text-gray-400 mt-1">Comparando fotos selecionadas do aluno</p>
+                            </div>
+                            <button 
+                                onClick={() => setIsCompareOpen(false)}
+                                className="p-2 bg-white/5 hover:bg-white/10 rounded-xl text-gray-400 hover:text-white transition-all cursor-pointer"
+                            >
+                                <X className="w-6 h-6" />
+                            </button>
+                        </div>
+
+                        {/* Photos Comparison */}
+                        <div className="flex-grow p-8 overflow-y-auto">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+                                {selectedPhotoObjects.map((photo, index) => (
+                                    <div key={photo.id} className="flex flex-col bg-white/5 rounded-2xl border border-white/5 overflow-hidden">
+                                        {/* Label Header */}
+                                        <div className="px-5 py-3 bg-white/5 border-b border-white/5 flex justify-between items-center">
+                                            <span className="text-[10px] text-primary font-black uppercase tracking-widest">
+                                                {index === 0 ? 'Antes' : 'Depois'}
+                                            </span>
+                                            <span className="text-xs text-gray-400 font-medium">
+                                                {photo.type}
+                                            </span>
+                                        </div>
+                                        
+                                        {/* Image Container */}
+                                        <div className="relative flex-grow min-h-[350px] md:min-h-[450px] bg-black/40 flex items-center justify-center">
+                                            <img 
+                                                src={photo.url} 
+                                                alt={photo.type}
+                                                className="w-full h-full max-h-[450px] object-contain"
+                                            />
+                                        </div>
+
+                                        {/* Photo Stats */}
+                                        <div className="p-5 border-t border-white/5 bg-zinc-950/50 flex justify-between items-center">
+                                            <div>
+                                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">Data</p>
+                                                <p className="text-white font-black text-sm">{photo.date}</p>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">Peso</p>
+                                                <p className="text-primary font-black text-sm">{photo.weight}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal de Zoom da Foto Individual */}
+            {zoomedPhoto && (
+                <div 
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm"
+                    onClick={() => setZoomedPhoto(null)}
+                >
+                    <div 
+                        className="relative max-w-3xl w-full bg-zinc-950 rounded-3xl border border-white/10 overflow-hidden shadow-2xl flex flex-col"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        {/* Header */}
+                        <div className="flex justify-between items-center px-6 py-4 border-b border-white/5">
+                            <div>
+                                <h3 className="text-md font-black text-white tracking-tight">{zoomedPhoto.type}</h3>
+                                <p className="text-xs text-gray-400">{zoomedPhoto.date} - {zoomedPhoto.weight}</p>
+                            </div>
+                            <button 
+                                onClick={() => setZoomedPhoto(null)}
+                                className="p-2 bg-white/5 hover:bg-white/10 rounded-xl text-gray-400 hover:text-white transition-all cursor-pointer"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+                        
+                        {/* Image */}
+                        <div className="p-4 flex items-center justify-center bg-black overflow-hidden max-h-[75vh]">
+                            <img 
+                                src={zoomedPhoto.url} 
+                                alt={zoomedPhoto.type} 
+                                className="max-w-full max-h-[70vh] object-contain rounded-xl" 
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

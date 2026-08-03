@@ -147,5 +147,21 @@
   "config": {
     "name": "Admin",
     "email": "admin@fitness.com"
-  }
+  },
+  "groups": [
+    "Peito",
+    "Costas",
+    "Pernas",
+    "Quadríceps",
+    "Posterior",
+    "Glúteos",
+    "Ombros",
+    "Bíceps",
+    "Tríceps",
+    "Abdômen",
+    "Panturrilha",
+    "Antebraço",
+    "Cardio",
+    "Geral"
+  ]
 }
