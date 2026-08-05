@@ -15,7 +15,9 @@ import {
     X,
     ChevronRight,
     BadgeDollarSign,
-    ClipboardList
+    ClipboardList,
+    MessageSquare,
+    AlertTriangle
 } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -37,6 +39,8 @@ export function AdminSidebar({ mobileMenuOpen, setMobileMenuOpen }: AdminSidebar
         { name: "Exercícios", href: "/admin/exercicios", icon: Activity },
         { name: "Planos", href: "/admin/planos", icon: CreditCard },
         { name: "Financeiro", href: "/admin/financeiro", icon: BadgeDollarSign },
+        { name: "Inadimplência", href: "/admin/inadimplencia", icon: AlertTriangle },
+        { name: "Chat", href: "/admin/chat", icon: MessageSquare },
         { name: "Configurações", href: "/admin/configuracoes", icon: Settings },
     ];
 
@@ -85,12 +89,12 @@ export function AdminSidebar({ mobileMenuOpen, setMobileMenuOpen }: AdminSidebar
                             key={item.href}
                             href={item.href}
                             onClick={() => isMobile && setMobileMenuOpen && setMobileMenuOpen(false)}
-                            className={`group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${active
+                            className={`group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${active
                                 ? 'bg-[#00caca] text-black shadow-[0_0_20px_rgba(0,202,202,0.2)]'
                                 : 'text-gray-400 hover:text-white hover:bg-white/5'
                                 }`}
                         >
-                            <item.icon className="w-5 h-5" />
+                            <item.icon className="w-[18px] h-[18px]" />
                             <span>{item.name}</span>
                         </Link>
                     );
@@ -114,7 +118,7 @@ export function AdminSidebar({ mobileMenuOpen, setMobileMenuOpen }: AdminSidebar
     return (
         <>
             {/* Desktop Sidebar */}
-            <aside className="hidden lg:flex flex-col w-64 fixed inset-y-0 left-0 z-50 shadow-2xl">
+            <aside className="hidden lg:flex flex-col w-56 fixed inset-y-0 left-0 z-50 shadow-2xl">
                 <div className="flex-1 border-r border-white/5">
                     {SidebarContent()}
                 </div>

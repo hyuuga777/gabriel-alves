@@ -10,6 +10,19 @@ export async function GET(req: Request) {
         }
 
         const email = session.user.email;
+        
+        // Fetch from Prisma
+        const { prisma } = await import("@/lib/prisma");
+        const userPrisma = await prisma.user.findUnique({
+            where: { email: email as string },
+            include: { alunoProfile: true, assinatura: { include: { plano: true } } }
+        });
+
+        if (userPrisma) {
+            return NextResponse.json(userPrisma);
+        }
+
+        // Fallback to localDb
         const db = getDb();
         const user = db.users.find((u: any) => u.email === email);
 
@@ -32,8 +45,48 @@ export async function PUT(req: Request) {
         }
 
         const body = await req.json();
-        const email = session.user.email;
+        const email = session.user.email as string;
         
+        const { prisma } = await import("@/lib/prisma");
+        const userPrisma = await prisma.user.findUnique({ where: { email } });
+
+        if (userPrisma) {
+            // Update Prisma
+            const { name, telefone, alunoProfile, rotina } = body;
+            
+            await prisma.user.update({
+                where: { email },
+                data: {
+                    ...(name && { name }),
+                    ...(telefone && { telefone })
+                }
+            });
+
+            if (alunoProfile) {
+                await prisma.alunoProfile.upsert({
+                    where: { userId: userPrisma.id },
+                    create: {
+                        userId: userPrisma.id,
+                        ...alunoProfile,
+                        ...(rotina && { rotina }),
+                        dataNascimento: alunoProfile.dataNascimento ? new Date(alunoProfile.dataNascimento) : new Date(),
+                    },
+                    update: {
+                        ...alunoProfile,
+                        ...(rotina && { rotina }),
+                        ...(alunoProfile.dataNascimento && { dataNascimento: new Date(alunoProfile.dataNascimento) }),
+                    }
+                });
+            }
+            
+            const updatedUser = await prisma.user.findUnique({
+                where: { email },
+                include: { alunoProfile: true }
+            });
+            return NextResponse.json(updatedUser);
+        }
+
+        // Fallback localDb
         const db = getDb();
         const userIndex = db.users.findIndex((u: any) => u.email === email);
 

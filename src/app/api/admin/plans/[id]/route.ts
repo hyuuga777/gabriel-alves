@@ -38,7 +38,7 @@ export async function PUT(
                 descricao,
                 preco: price !== undefined ? (typeof price === 'string' ? parseFloat(price.replace(',', '.')) : price) : undefined,
                 intervalo: period,
-                recursos: features,
+                recursos: Array.isArray(features) ? JSON.stringify(features) : features,
                 ativo: active,
                 destaque: highlight,
                 textoDestaque: highlightText,

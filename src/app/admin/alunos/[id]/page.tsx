@@ -11,38 +11,40 @@ import {
     Ruler, 
     Camera, 
     Settings,
+    FileText,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState, useEffect, use } from 'react';
 import { WorkoutsTab } from '@/components/students/WorkoutsTab';
 import { StatsTab } from '@/components/students/StatsTab';
 import { MeasurementsTab } from '@/components/students/MeasurementsTab';
 import { PhotosTab } from '@/components/students/PhotosTab';
 import { SettingsTab } from '@/components/students/SettingsTab';
+import { AnamneseTab } from '@/components/students/AnamneseTab';
+import { PhysicalTestsTab } from '@/components/students/PhysicalTestsTab';
+import { PosturalTab } from '@/components/students/PosturalTab';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 const TABS = [
+    { id: 'anamnese', label: 'Anamnese', icon: FileText },
     { id: 'workouts', label: 'Programas', icon: Dumbbell },
     { id: 'stats', label: 'Performance', icon: Activity },
     { id: 'measurements', label: 'Medidas', icon: Ruler },
+    { id: 'postural', label: 'Postural', icon: User },
+    { id: 'physical-tests', label: 'Testes Físicos', icon: Activity },
     { id: 'photos', label: 'Evolução', icon: Camera },
     { id: 'settings', label: 'Gestão', icon: Settings },
 ];
 
 export default function StudentProfile({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
+    const router = useRouter();
     const [activeTab, setActiveTab] = useState('workouts');
     const [student, setStudent] = useState<any>(null);
     const [loading, setLoading] = useState(true);
-    const [situacaoStatus, setSituacaoStatus] = useState<string>('INATIVO');
-
-    useEffect(() => {
-        if (student) {
-            const savedStatus = localStorage.getItem('mock_user_status');
-            setSituacaoStatus(savedStatus || student.assinatura?.status || 'INATIVO');
-        }
-    }, [student]);
+    const situacaoStatus = student?.assinatura?.status || 'INATIVO';
 
     useEffect(() => {
         const fetchStudent = async () => {
@@ -90,7 +92,7 @@ export default function StudentProfile({ params }: { params: Promise<{ id: strin
     return (
         <div className="min-h-screen bg-black text-white p-4 md:p-8 lg:p-12">
             {/* Navigation Header */}
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 mb-16">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
                 <div className="flex items-center gap-6">
                     <Link 
                         href="/admin/alunos" 
@@ -100,7 +102,7 @@ export default function StudentProfile({ params }: { params: Promise<{ id: strin
                     </Link>
                     <div>
                         <div className="flex items-center gap-3 mb-1">
-                            <h1 className="text-4xl lg:text-5xl font-black tracking-tightest">{student.name}</h1>
+                            <h1 className="text-3xl lg:text-4xl font-black tracking-tightest">{student.name}</h1>
                             <span className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full border ${
                                 situacaoStatus === 'ATIVA' 
                                     ? 'bg-primary/10 text-primary border-primary/20' 
@@ -116,15 +118,18 @@ export default function StudentProfile({ params }: { params: Promise<{ id: strin
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <button className="flex-1 lg:flex-none flex items-center justify-center gap-3 bg-white/5 hover:bg-white/10 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all border border-white/5">
-                        <MessageSquare className="w-4 h-4" />
+                    <button 
+                        onClick={() => router.push(`/admin/chat?userId=${id}`)}
+                        className="flex-1 lg:flex-none flex items-center justify-center gap-3 bg-white/5 hover:bg-white/10 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all border border-white/5 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(0,202,202,0.15)] group"
+                    >
+                        <MessageSquare className="w-4 h-4 group-hover:text-primary transition-colors" />
                         Chat Direto
                     </button>
                 </div>
             </div>
 
             {/* Quick Stats Banner */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 {[
                     { label: 'Treinos / Ativos', value: numTreinos, unit: 'programas', color: 'text-primary' },
                     { label: 'Taxa Adesão', value: student.taxaAdesao || '94', unit: '%', color: 'text-green-400' },
@@ -138,9 +143,9 @@ export default function StudentProfile({ params }: { params: Promise<{ id: strin
                         transition={{ delay: i * 0.05 }}
                         className="bg-white/5 border border-white/5 p-6 rounded-3xl"
                     >
-                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-2">{stat.label}</p>
+                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">{stat.label}</p>
                         <div className="flex items-baseline gap-1">
-                            <span className={`text-3xl font-black tracking-tighter ${stat.color}`}>{stat.value}</span>
+                            <span className={`text-2xl lg:text-3xl font-black tracking-tighter ${stat.color}`}>{stat.value}</span>
                             <span className="text-[10px] text-gray-600 font-bold uppercase">{stat.unit}</span>
                         </div>
                     </motion.div>
@@ -148,12 +153,12 @@ export default function StudentProfile({ params }: { params: Promise<{ id: strin
             </div>
 
             {/* Tabs Navigation */}
-            <div className="flex items-center gap-1 bg-white/5 p-1.5 rounded-[2rem] border border-white/5 mb-12 overflow-x-auto no-scrollbar">
+            <div className="flex items-center gap-1 bg-white/5 p-1.5 rounded-[2rem] border border-white/5 mb-8 overflow-x-auto no-scrollbar">
                 {TABS.map((tab) => (
                     <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
-                        className={`flex items-center gap-2.5 px-6 py-4 rounded-[1.5rem] font-bold text-xs uppercase tracking-widest transition-all whitespace-nowrap ${
+                        className={`flex items-center gap-2 px-5 py-3 rounded-[1.5rem] font-bold text-xs uppercase tracking-widest transition-all whitespace-nowrap ${
                             activeTab === tab.id 
                                 ? 'bg-white text-black shadow-lg' 
                                 : 'text-gray-500 hover:text-white hover:bg-white/5'
@@ -175,10 +180,24 @@ export default function StudentProfile({ params }: { params: Promise<{ id: strin
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.2 }}
                     >
+                        {activeTab === 'anamnese' && <AnamneseTab student={student} onUpdate={() => {
+                            const fetchStudent = async () => {
+                                try {
+                                    const res = await fetch(`/api/admin/users/${id}`);
+                                    if (res.ok) {
+                                        const data = await res.json();
+                                        setStudent(data);
+                                    }
+                                } catch (e) { console.error(e); }
+                            };
+                            fetchStudent();
+                        }} />}
                         {activeTab === 'workouts' && <WorkoutsTab student={student} />}
-                        {activeTab === 'stats' && <StatsTab />}
-                        {activeTab === 'measurements' && <MeasurementsTab />}
-                        {activeTab === 'photos' && <PhotosTab />}
+                        {activeTab === 'stats' && <StatsTab student={student} />}
+                        {activeTab === 'measurements' && <MeasurementsTab studentId={id} />}
+                        {activeTab === 'postural' && <PosturalTab studentId={id} />}
+                        {activeTab === 'physical-tests' && <PhysicalTestsTab studentId={id} />}
+                        {activeTab === 'photos' && <PhotosTab studentId={id} />}
                         {activeTab === 'settings' && (
                             <SettingsTab 
                                 student={student} 

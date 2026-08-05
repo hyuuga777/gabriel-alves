@@ -13,7 +13,12 @@ const PROGRESS_PHOTOS = [
     { id: '6', date: '10 Jan, 2024', weight: '85.5 kg', type: 'Lado', url: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?q=80&w=400&auto=format&fit=crop' },
 ];
 
-export function PhotosTab() {
+interface PhotosTabProps {
+    studentId?: string;
+}
+
+export function PhotosTab({ studentId }: PhotosTabProps) {
+    const storageKey = `evolution_photos_${studentId || 'default'}`;
     const [selectedPhotos, setSelectedPhotos] = useState<string[]>([]);
     const [photos, setPhotos] = useState(PROGRESS_PHOTOS);
     const [isCompareOpen, setIsCompareOpen] = useState(false);
@@ -45,7 +50,7 @@ export function PhotosTab() {
         .sort((a, b) => parsePhotoDate(a.date) - parsePhotoDate(b.date));
 
     useEffect(() => {
-        const savedPhotos = localStorage.getItem('evolution_photos_mock-1');
+        const savedPhotos = localStorage.getItem(storageKey);
         if (savedPhotos) {
             try {
                 setPhotos(JSON.parse(savedPhotos));
@@ -53,7 +58,7 @@ export function PhotosTab() {
                 console.error("Error parsing saved photos", e);
             }
         }
-    }, []);
+    }, [storageKey]);
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -72,9 +77,9 @@ export function PhotosTab() {
                 
                 setPhotos(prev => {
                     const updated = [newPhoto, ...prev];
-                    // Save to localStorage as a fallback
+                    // Save to localStorage keyed by student
                     try {
-                        localStorage.setItem('evolution_photos_mock-1', JSON.stringify(updated));
+                        localStorage.setItem(storageKey, JSON.stringify(updated));
                     } catch (err) {
                         console.warn("Storage quota exceeded or error saving base64 to localStorage");
                     }
@@ -91,7 +96,7 @@ export function PhotosTab() {
         setPhotos(prev => {
             const updated = prev.filter(p => p.id !== id);
             try {
-                localStorage.setItem('evolution_photos_mock-1', JSON.stringify(updated));
+                localStorage.setItem(storageKey, JSON.stringify(updated));
             } catch (err) { }
             return updated;
         });

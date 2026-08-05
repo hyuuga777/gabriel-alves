@@ -2,8 +2,10 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import { Home, Dumbbell, MessageCircle, CreditCard, User, LogOut } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import AnamneseModal from '@/components/AnamneseModal';
 
 export default function StudentLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -16,8 +18,44 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
         { name: 'Perfil', href: '/aluno/perfil', icon: User },
     ];
 
+    const { data: session } = useSession();
+    const [needsOnboarding, setNeedsOnboarding] = useState(false);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const checkOnboarding = async () => {
+            try {
+                const res = await fetch('/api/aluno/perfil');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.alunoProfile && data.alunoProfile.onboardingCompleto) {
+                        setNeedsOnboarding(false);
+                    } else {
+                        setNeedsOnboarding(true);
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (session?.user) {
+            checkOnboarding();
+        } else {
+            setLoading(false);
+        }
+    }, [session]);
+
+    if (loading) {
+        return <div className="min-h-screen bg-black flex items-center justify-center text-white">Carregando...</div>;
+    }
+
     return (
         <div className="min-h-screen bg-black text-white flex">
+            {needsOnboarding && <AnamneseModal onComplete={() => setNeedsOnboarding(false)} />}
+            
             {/* Desktop Sidebar (visible on lg+) */}
             <aside className="hidden lg:flex flex-col w-64 border-r border-white/10 bg-[#111] h-screen sticky top-0">
                 <div className="p-6 border-b border-white/10">

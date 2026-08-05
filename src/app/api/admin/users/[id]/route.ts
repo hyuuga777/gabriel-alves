@@ -98,7 +98,8 @@ export async function GET(
                 treinoLogs: {
                     orderBy: { createdAt: 'desc' },
                     take: 5
-                }
+                },
+                alunoProfile: true
             }
         });
 
@@ -157,12 +158,18 @@ export async function PUT(
             if (name) db.users[userIndex].name = name;
             if (email) db.users[userIndex].email = email;
             if (status) db.users[userIndex].status = status;
+            if (body.anotacoes !== undefined) db.users[userIndex].anotacoes = body.anotacoes;
 
             if (removeWorkout || treinoId === null || treinoId === "") {
                 db.users[userIndex].atribuicoes = [];
+            } else if (body.removeWorkoutId) {
+                // Remove a specific atribuicao by ID
+                db.users[userIndex].atribuicoes = (db.users[userIndex].atribuicoes || []).filter(
+                    (a: any) => a.id !== body.removeWorkoutId
+                );
             } else if (treinoId) {
                 const workout = db.workouts?.find((w: any) => w.id === treinoId) || { nome: "Treino Personalizado", titulo: "Treino Personalizado" };
-                db.users[userIndex].atribuicoes = [{
+                const newAtrib = {
                     id: "mock-atrib-" + Date.now(),
                     treinoId,
                     alunoId: id,
@@ -174,7 +181,12 @@ export async function PUT(
                         descricao: workout.descricao || "Treino personalizado",
                         exercicios: Array.isArray(workout.exercicios) ? workout.exercicios : Array(workout.exercicios || 3).fill({ exercicio: { nome: "Exercício" } })
                     }
-                }];
+                };
+                // Check for duplicates before adding
+                const alreadyAssigned = (db.users[userIndex].atribuicoes || []).some((a: any) => a.treinoId === treinoId);
+                if (!alreadyAssigned) {
+                    db.users[userIndex].atribuicoes = [...(db.users[userIndex].atribuicoes || []), newAtrib];
+                }
             }
 
             if (planoId) {
@@ -205,22 +217,46 @@ export async function PUT(
         }
 
         const body = await request.json();
-        const { name, email, status, treinoId, planoId, removeWorkout } = body;
+        const { name, email, status, treinoId, planoId, removeWorkout, removeWorkoutId, anotacoes, alunoProfile } = body;
 
-        if (name || email) {
+        if (name || email || anotacoes !== undefined) {
             await prisma.user.update({
                 where: { id },
                 data: {
                     ...(name && { name }),
-                    ...(email && { email })
+                    ...(email && { email }),
+                    ...(anotacoes !== undefined && { anotacoes })
                 }
             });
         }
 
-        if (status) {
-            await prisma.assinatura.update({
+        if (alunoProfile) {
+            await prisma.alunoProfile.update({
                 where: { userId: id },
-                data: { status }
+                data: alunoProfile
+            }).catch(console.error); // Silently fail if profile doesn't exist yet
+        }
+
+        if (status) {
+            await prisma.assinatura.upsert({
+                where: { userId: id },
+                update: { status },
+                create: { 
+                    userId: id, 
+                    status,
+                    planoId: "dummy-plano-not-found" // Fallback but this will fail relation constraint if plan doesn't exist
+                }
+            }).catch(async () => {
+                // Se falhar porque não temos um planoId (é obrigatório na tabela), 
+                // então não fazemos nada por enquanto, ou pegamos um plano padrão.
+                const defaultPlan = await prisma.plano.findFirst();
+                if (defaultPlan) {
+                    await prisma.assinatura.upsert({
+                        where: { userId: id },
+                        update: { status },
+                        create: { userId: id, status, planoId: defaultPlan.id }
+                    });
+                }
             });
         }
 
@@ -240,18 +276,26 @@ export async function PUT(
 
         if (removeWorkout || treinoId === null || treinoId === "") {
             await prisma.atribuicaoTreino.deleteMany({ where: { alunoId: id } });
+            return NextResponse.json({ message: "All workout assignments removed" });
+        }
+
+        // Remove a specific workout by atribuicao ID
+        if (removeWorkoutId) {
+            await prisma.atribuicaoTreino.delete({ where: { id: removeWorkoutId } });
             return NextResponse.json({ message: "Workout assignment removed" });
         }
 
         if (treinoId) {
-            await prisma.atribuicaoTreino.updateMany({
-                where: { alunoId: id, ativo: true },
-                data: { ativo: false }
+            // Check if this workout is already assigned to avoid duplicates
+            const existing = await prisma.atribuicaoTreino.findFirst({
+                where: { alunoId: id, treinoId, ativo: true }
             });
-            const assignment = await prisma.atribuicaoTreino.create({
-                data: { alunoId: id, treinoId, ativo: true, diasSemana: "[]" }
-            });
-            return NextResponse.json({ message: "Updated workout and plan", ...assignment });
+            if (!existing) {
+                await prisma.atribuicaoTreino.create({
+                    data: { alunoId: id, treinoId, ativo: true, diasSemana: "[]" }
+                });
+            }
+            return NextResponse.json({ message: "Workout added to student" });
         }
 
         return NextResponse.json({ message: "User updated successfully" });

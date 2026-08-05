@@ -30,3 +30,30 @@ export async function GET(req: Request) {
         return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
     }
 }
+
+export async function POST(req: Request) {
+    try {
+        const session = await auth();
+        if (!session || session.user?.role !== 'ALUNO') {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        const userId = session.user.id;
+        const body = await req.json();
+
+        const novaAvaliacao = await prisma.avaliacao.create({
+            data: {
+                alunoId: userId,
+                tipo: 'online', // or body.tipo
+                peso: body.peso || null,
+                percentualGordura: body.percentualGordura || null,
+                perimetros: body.perimetros || {},
+            }
+        });
+
+        return NextResponse.json({ success: true, avaliacao: novaAvaliacao });
+    } catch (error) {
+        console.error('Error creating student evolution:', error);
+        return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
+    }
+}

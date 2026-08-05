@@ -19,7 +19,8 @@ export default function StudentProfilePage() {
         gender: '',
         phone: '',
         address: '',
-        avatar: ''
+        avatar: '',
+        rotina: ''
     });
 
     useEffect(() => {
@@ -34,9 +35,10 @@ export default function StudentProfilePage() {
                         link: data.link || '',
                         birthDate: data.birthDate || '',
                         gender: data.gender || '',
-                        phone: data.phone || '',
+                        phone: data.phone || data.telefone || '',
                         address: data.address || '',
-                        avatar: data.avatar || session?.user?.image || ''
+                        avatar: data.avatar || session?.user?.image || '',
+                        rotina: data.alunoProfile?.rotina || data.rotina || ''
                     });
                 }
             })

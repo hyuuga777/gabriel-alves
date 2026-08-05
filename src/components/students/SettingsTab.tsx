@@ -146,7 +146,7 @@ export function SettingsTab({ student, onUpdate }: { student?: any, onUpdate?: (
         setPermissions(permissions.map(p => p.id === id ? { ...p, active: !p.active } : p));
     };
 
-    const currentStatus = student?.assinatura?.status || 'ATIVA';
+    const currentStatus = student?.assinatura?.status || 'INATIVO';
 
     return (
         <div className="space-y-8 relative">
