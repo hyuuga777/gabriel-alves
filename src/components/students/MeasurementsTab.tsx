@@ -31,11 +31,11 @@ const BODY_PARTS = [
 
 // Default empty state for circumferences
 const DEFAULT_CIRCUMFERENCES = [
-    { label: 'Braço (Contraído)', value: null, unit: 'cm', change: '0.0', key: 'braco_contraido' },
-    { label: 'Tórax (Peitoral)', value: null, unit: 'cm', change: '0.0', key: 'torax_peitoral' },
-    { label: 'Abdomen (Cintura)', value: null, unit: 'cm', change: '0.0', key: 'abdomen_cintura' },
-    { label: 'Coxa (Fêmur)', value: null, unit: 'cm', change: '0.0', key: 'coxa_femur' },
-    { label: 'Panturrilha', value: null, unit: 'cm', change: '0.0', key: 'panturrilha' },
+    { label: 'Braço (Contraído)', value: null as number | null, unit: 'cm', change: '0.0', key: 'braco_contraido' },
+    { label: 'Tórax (Peitoral)', value: null as number | null, unit: 'cm', change: '0.0', key: 'torax_peitoral' },
+    { label: 'Abdomen (Cintura)', value: null as number | null, unit: 'cm', change: '0.0', key: 'abdomen_cintura' },
+    { label: 'Coxa (Fêmur)', value: null as number | null, unit: 'cm', change: '0.0', key: 'coxa_femur' },
+    { label: 'Panturrilha', value: null as number | null, unit: 'cm', change: '0.0', key: 'panturrilha' },
 ];
 
 export function MeasurementsTab({ studentId }: MeasurementsTabProps) {

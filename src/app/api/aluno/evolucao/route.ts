@@ -41,9 +41,18 @@ export async function POST(req: Request) {
         const userId = session.user.id;
         const body = await req.json();
 
+        const admin = await prisma.user.findFirst({
+            where: { role: 'ADMIN' }
+        });
+
+        if (!admin) {
+             return NextResponse.json({ error: 'No admin found to assign to this evaluation' }, { status: 500 });
+        }
+
         const novaAvaliacao = await prisma.avaliacao.create({
             data: {
                 alunoId: userId,
+                treinadorId: admin.id,
                 tipo: 'online', // or body.tipo
                 peso: body.peso || null,
                 percentualGordura: body.percentualGordura || null,

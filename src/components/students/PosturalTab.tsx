@@ -219,7 +219,7 @@ export function PosturalTab({ studentId }: { studentId: string }) {
                 <h3 className="text-lg font-semibold text-white mb-4">Observações Posturais Adicionais</h3>
                 <textarea 
                     value={postura.observacoes || ''}
-                    onChange={(e) => setPostura(prev => ({ ...prev, observacoes: e.target.value }))}
+                    onChange={(e) => setPostura((prev: any) => ({ ...prev, observacoes: e.target.value }))}
                     placeholder="Descreva assimetrias e encurtamentos não listados acima..."
                     className="w-full h-32 bg-black/50 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-pink-500 transition-colors"
                 />

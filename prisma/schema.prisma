@@ -17,6 +17,8 @@ model User {
   telefone             String?
   createdAt            DateTime           @default(now())
   updatedAt            DateTime           @updatedAt
+  resetToken           String?            @db.Text
+  resetTokenExpiry     DateTime?
   anotacoes            String?            @db.Text
   alunoProfile         AlunoProfile?
   assinatura           Assinatura?
