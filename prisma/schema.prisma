@@ -3,25 +3,32 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model User {
   id                   String             @id @default(cuid())
-  email                String             @unique
+  email                String?            @unique
   name                 String
-  password             String
+  password             String?
+  externalSourceId     String?            // Identificador técnico de importação
   role                 Role               @default(ALUNO)
   avatar               String?
   telefone             String?
+  
+  // Relacionamento multi-tenant: Um aluno pertence a um treinador
+  treinadorId          String?
+  treinador            User?              @relation("TreinadorAlunos", fields: [treinadorId], references: [id])
+  alunos               User[]             @relation("TreinadorAlunos")
+
   createdAt            DateTime           @default(now())
   updatedAt            DateTime           @updatedAt
-  resetToken           String?            @db.Text
+  resetToken           String?
   resetTokenExpiry     DateTime?
-  anotacoes            String?            @db.Text
+  anotacoes            String?
   alunoProfile         AlunoProfile?
-  assinatura           Assinatura?
+  assinaturas          Assinatura[]
   atribuicoes          AtribuicaoTreino[]
   avaliacoes           Avaliacao[]        @relation("AvaliacoesAluno")
   avaliacoesRealizadas Avaliacao[]        @relation("AvaliacoesTreinador")
@@ -30,6 +37,8 @@ model User {
   notificacoes         Notificacao[]
   treinosCriados       Treino[]           @relation("TreinosDoTreinador")
   treinoLogs           TreinoLog[]
+
+  @@index([treinadorId])
 }
 
 model AlunoProfile {
@@ -39,20 +48,20 @@ model AlunoProfile {
   genero              String
   altura              Float
   pesoInicial         Float
-  objetivos           String   @db.LongText
+  objetivos           String
   restricoes          String?
   historicoSaude      String?
   nivelAtividade      String
   
   // Novos campos do Excel (Menu.csv)
-  doresIntensidade    String?  @db.Text
-  limitacoes          String?  @db.Text
-  referenciaObjetivo  String?  @db.Text
-  pontosFracos        String?  @db.Text
-  pontosFortes        String?  @db.Text
-  exerciciosProibidos String?  @db.Text
-  metodosUtilizados   String?  @db.LongText
-  rotina              String?  @db.LongText
+  doresIntensidade    String?
+  limitacoes          String?
+  referenciaObjetivo  String?
+  pontosFracos        String?
+  pontosFortes        String?
+  exerciciosProibidos String?
+  metodosUtilizados   String?
+  rotina              String?
 
   onboardingCompleto  Boolean  @default(false)
   createdAt           DateTime @default(now())
@@ -62,18 +71,22 @@ model AlunoProfile {
 
 model Assinatura {
   id         String           @id @default(cuid())
-  userId     String           @unique
+  userId     String
+  treinadorId String
   planoId    String
   status     StatusAssinatura @default(ATIVA)
   dataInicio DateTime         @default(now())
   dataFim    DateTime?
+  valor      Float            @default(0.0) // Trazido do plano no momento da assinatura
   createdAt  DateTime         @default(now())
   updatedAt  DateTime         @updatedAt
   plano      Plano            @relation(fields: [planoId], references: [id])
   user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   pagamentos Pagamento[]
 
-  @@index([planoId], map: "Assinatura_planoId_fkey")
+  @@index([planoId])
+  @@index([userId])
+  @@index([treinadorId])
 }
 
 model Plano {
@@ -82,7 +95,7 @@ model Plano {
   descricao     String?
   preco         Float
   intervalo     String
-  recursos      String       @db.LongText
+  recursos      String
   ativo         Boolean      @default(true)
   destaque      Boolean      @default(false)
   textoDestaque String?
@@ -99,23 +112,24 @@ model Pagamento {
   valor           Float
   status          String
   metodoPagamento String
+  observacao      String?
   transacaoId     String?
   preferenceId    String?
   createdAt       DateTime   @default(now())
   assinatura      Assinatura @relation(fields: [assinaturaId], references: [id], onDelete: Cascade)
 
-  @@index([assinaturaId], map: "Pagamento_assinaturaId_fkey")
+  @@index([assinaturaId])
 }
 
 model Exercicio {
   id               String            @id @default(cuid())
   nome             String
-  descricao        String?           @db.Text
-  grupoMuscular    String            @db.LongText
-  equipamento      String            @db.LongText
+  descricao        String?
+  grupoMuscular    String
+  equipamento      String
   videoUrl         String?
   gifUrl           String?
-  instrucoes       String?           @db.Text
+  instrucoes       String?
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   exerciciosTreino ExercicioTreino[]
@@ -124,7 +138,7 @@ model Exercicio {
 model Treino {
   id          String             @id @default(cuid())
   nome        String
-  descricao   String?            @db.Text
+  descricao   String?
   tipo        String
   treinadorId String
   createdAt   DateTime           @default(now())
@@ -144,20 +158,20 @@ model ExercicioTreino {
   series      Int
   repeticoes  String
   descanso    Int
-  observacoes String?        @db.Text
+  observacoes String?
   logs        ExercicioLog[]
   exercicio   Exercicio      @relation(fields: [exercicioId], references: [id])
   treino      Treino         @relation(fields: [treinoId], references: [id], onDelete: Cascade)
 
   @@unique([treinoId, ordem])
-  @@index([exercicioId], map: "ExercicioTreino_exercicioId_fkey")
+  @@index([exercicioId])
 }
 
 model AtribuicaoTreino {
   id         String   @id @default(cuid())
   treinoId   String
   alunoId    String
-  diasSemana String   @db.LongText
+  diasSemana String
   ativo      Boolean  @default(true)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
@@ -165,12 +179,13 @@ model AtribuicaoTreino {
   treino     Treino   @relation(fields: [treinoId], references: [id], onDelete: Cascade)
 
   @@unique([treinoId, alunoId])
-  @@index([alunoId], map: "AtribuicaoTreino_alunoId_fkey")
+  @@index([alunoId])
 }
 
 model TreinoLog {
   id         String         @id @default(cuid())
   alunoId    String
+  treinadorId String
   treinoId   String
   treinoNome String
   dataInicio DateTime       @default(now())
@@ -180,7 +195,8 @@ model TreinoLog {
   exercicios ExercicioLog[]
   aluno      User           @relation(fields: [alunoId], references: [id], onDelete: Cascade)
 
-  @@index([alunoId], map: "TreinoLog_alunoId_fkey")
+  @@index([alunoId])
+  @@index([treinadorId])
 }
 
 model ExercicioLog {
@@ -191,14 +207,14 @@ model ExercicioLog {
   carga             Float?
   repeticoes        Int?
   rpe               Int?
-  notas             String?         @db.Text
+  notas             String?
   concluido         Boolean         @default(false)
   createdAt         DateTime        @default(now())
   exercicioTreino   ExercicioTreino @relation(fields: [exercicioTreinoId], references: [id])
   treinoLog         TreinoLog       @relation(fields: [treinoLogId], references: [id], onDelete: Cascade)
 
-  @@index([exercicioTreinoId], map: "ExercicioLog_exercicioTreinoId_fkey")
-  @@index([treinoLogId], map: "ExercicioLog_treinoLogId_fkey")
+  @@index([exercicioTreinoId])
+  @@index([treinoLogId])
 }
 
 model Avaliacao {
@@ -208,22 +224,23 @@ model Avaliacao {
   tipo              String
   data              DateTime        @default(now())
   peso              Float?
-  bioimpedancia     String?         @db.LongText
-  dobrasCutaneas    String?         @db.LongText
-  perimetros        String?         @db.LongText
-  mobilidade        String?         @db.LongText
-  encurtamentos     String?         @db.LongText
-  postura           String?         @db.LongText
-  assimetrias       String?         @db.LongText
+  bioimpedancia     String?
+  dobrasCutaneas    String?
+  perimetros        String?
+  mobilidade        String?
+  encurtamentos     String?
+  postura           String?
+  assimetrias       String?
   cooperTest        Float?
-  forcaMaxima       String?         @db.LongText
-  potenciaIso       String?         @db.LongText
+  forcaMaxima       String?
+  potenciaIso       String?
   percentualGordura Float?
   vo2Max            Float?
   percentVO2        Float?
   mets              Float?
   gastoCalorico     Float?
-  observacoes       String?         @db.Text
+  observacoes       String?
+  sourceHash        String?         // Hash de auditoria de duplicidade
   createdAt         DateTime        @default(now())
   aluno             User            @relation("AvaliacoesAluno", fields: [alunoId], references: [id], onDelete: Cascade)
   treinador         User            @relation("AvaliacoesTreinador", fields: [treinadorId], references: [id])
@@ -241,14 +258,14 @@ model FotoAvaliacao {
   createdAt   DateTime  @default(now())
   avaliacao   Avaliacao @relation(fields: [avaliacaoId], references: [id], onDelete: Cascade)
 
-  @@index([avaliacaoId], map: "FotoAvaliacao_avaliacaoId_fkey")
+  @@index([avaliacaoId])
 }
 
 model Mensagem {
   id             String   @id @default(cuid())
   remetenteId    String
   destinatarioId String
-  conteudo       String   @db.Text
+  conteudo       String
   anexoUrl       String?
   lida           Boolean  @default(false)
   createdAt      DateTime @default(now())
@@ -264,13 +281,35 @@ model Notificacao {
   userId    String
   tipo      String
   titulo    String
-  mensagem  String   @db.Text
+  mensagem  String
   link      String?
   lida      Boolean  @default(false)
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, lida])
+}
+
+model ImportBatch {
+  id                  String   @id @default(cuid())
+  treinadorId         String
+  dataImportacao      DateTime @default(now())
+  arquivoOriginal     String
+  hash                String?
+  tamanho             Int?
+  modo                String?
+  userIdExecutor      String?
+  registrosLidos      Int      @default(0)
+  registrosImportados Int      @default(0)
+  registrosRejeitados Int      @default(0)
+  registrosDuplicados Int      @default(0)
+  errosDetalhes       String?  
+  status              String   @default("SUCESSO") // SIMULATED, SUCESSO, PARCIAL, FALHA, REVERTIDO
+  startedAt           DateTime?
+  completedAt         DateTime?
+  createdAt           DateTime @default(now())
+
+  @@index([treinadorId])
 }
 
 enum Role {
