@@ -15,7 +15,7 @@ export async function GET(req: Request) {
         const { prisma } = await import("@/lib/prisma");
         const userPrisma = await prisma.user.findUnique({
             where: { email: email as string },
-            include: { alunoProfile: true, assinatura: { include: { plano: true } } }
+            include: { alunoProfile: true, assinaturas: { include: { plano: true } } }
         });
 
         if (userPrisma) {

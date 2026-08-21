@@ -26,7 +26,7 @@ export async function GET() {
             const inadimplentes = await prisma.user.findMany({
                 where: {
                     role: 'ALUNO',
-                    assinatura: {
+                    assinaturas: {
                         OR: [
                             { status: { in: ['EXPIRADA', 'SUSPENSA', 'CANCELADA'] } },
                             { dataFim: { lt: daquiA7Dias } }
@@ -39,7 +39,7 @@ export async function GET() {
                     email: true,
                     telefone: true,
                     avatar: true,
-                    assinatura: {
+                    assinaturas: {
                         select: {
                             status: true,
                             dataFim: true,
@@ -52,14 +52,14 @@ export async function GET() {
                     }
                 },
                 orderBy: {
-                    assinatura: {
+                    assinaturas: {
                         dataFim: 'asc'
                     }
                 }
             });
 
             const formatados = inadimplentes.map(user => {
-                const isVencido = user.assinatura?.dataFim && new Date(user.assinatura.dataFim) < hoje;
+                const isVencido = user.assinatura?.dataFim && new Date(user.assinaturas[0].dataFim) < hoje;
                 const statusFinal = (user.assinatura?.status === 'ATIVA' && isVencido) ? 'EXPIRADA' : user.assinatura?.status;
 
                 return {
