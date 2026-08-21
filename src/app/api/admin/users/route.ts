@@ -6,37 +6,37 @@ import bcrypt from "bcryptjs";
 const mockUsers = [
     {
         id: 'mock-1', name: 'Carlos Silva', email: 'carlos@gabrielalves.com', role: 'ALUNO', avatar: 'https://ui-avatars.com/api/?name=Carlos+Silva&background=random',
-        atribuicoes: [{ treino: { nome: 'Hipertrofia A' } }], assinatura: { status: 'ATIVA' },
+        atribuicoes: [{ treino: { nome: 'Hipertrofia A' } }], assinaturas: { status: 'ATIVA' },
         treinoLogs: [{ createdAt: new Date().toISOString() }, { createdAt: new Date(Date.now() - 86400000).toISOString() }]
     },
     {
         id: 'mock-2', name: 'Ana Pereira', email: 'ana@gabrielalves.com', role: 'ALUNO', avatar: 'https://ui-avatars.com/api/?name=Ana+Pereira&background=random',
-        atribuicoes: [{ treino: { nome: 'Hipertrofia B' } }], assinatura: { status: 'ATIVA' },
+        atribuicoes: [{ treino: { nome: 'Hipertrofia B' } }], assinaturas: { status: 'ATIVA' },
         treinoLogs: [{ createdAt: new Date(Date.now() - 172800000).toISOString() }]
     },
     {
         id: 'mock-3', name: 'Roberto Costa', email: 'roberto@gabrielalves.com', role: 'ALUNO', avatar: 'https://ui-avatars.com/api/?name=Roberto+Costa&background=random',
-        atribuicoes: [{ treino: { nome: 'Hipertrofia C' } }], assinatura: { status: 'SUSPENSA' },
+        atribuicoes: [{ treino: { nome: 'Hipertrofia C' } }], assinaturas: { status: 'SUSPENSA' },
         treinoLogs: []
     },
     {
         id: 'mock-4', name: 'Julia Santos', email: 'julia@gabrielalves.com', role: 'ALUNO', avatar: 'https://ui-avatars.com/api/?name=Julia+Santos&background=random',
-        atribuicoes: [{ treino: { nome: 'Hipertrofia A' } }], assinatura: { status: 'ATIVA' },
+        atribuicoes: [{ treino: { nome: 'Hipertrofia A' } }], assinaturas: { status: 'ATIVA' },
         treinoLogs: Array(5).fill({ createdAt: new Date().toISOString() })
     },
     {
         id: 'mock-5', name: 'Pedro Oliveira', email: 'pedro@gabrielalves.com', role: 'ALUNO', avatar: 'https://ui-avatars.com/api/?name=Pedro+Oliveira&background=random',
-        atribuicoes: [], assinatura: { status: 'EXPIRADA' },
+        atribuicoes: [], assinaturas: { status: 'EXPIRADA' },
         treinoLogs: []
     },
     {
         id: 'mock-6', name: 'Mariana Lima', email: 'mariana@gabrielalves.com', role: 'ALUNO', avatar: 'https://ui-avatars.com/api/?name=Mariana+Lima&background=random',
-        atribuicoes: [{ treino: { nome: 'Hipertrofia B' } }], assinatura: { status: 'ATIVA' },
+        atribuicoes: [{ treino: { nome: 'Hipertrofia B' } }], assinaturas: { status: 'ATIVA' },
         treinoLogs: [{ createdAt: new Date().toISOString() }]
     },
     {
         id: 'mock-7', name: 'Lucas Mendes', email: 'lucas@gabrielalves.com', role: 'ALUNO', avatar: 'https://ui-avatars.com/api/?name=Lucas+Mendes&background=random',
-        atribuicoes: [{ treino: { nome: 'Hipertrofia C' } }], assinatura: { status: 'SUSPENSA' },
+        atribuicoes: [{ treino: { nome: 'Hipertrofia C' } }], assinaturas: { status: 'SUSPENSA' },
         treinoLogs: []
     }
 ];
@@ -56,13 +56,17 @@ export async function GET() {
         // }
 
         const users = await prisma.user.findMany({
+            where: {
+                role: 'ALUNO',
+                treinadorId: (session.user as any).id
+            },
             include: {
                 atribuicoes: {
                     where: { ativo: true },
                     include: { treino: true },
                     take: 1
                 },
-                assinatura: {
+                assinaturas: {
                     select: { 
                         status: true,
                         dataFim: true,
@@ -160,6 +164,7 @@ export async function POST(req: Request) {
                 password: hashedPassword,
                 role: 'ALUNO',
                 telefone: telefone || null,
+                treinadorId: (session.user as any).id,
                 alunoProfile: {
                     create: {
                         dataNascimento: defaultDate,
@@ -170,7 +175,7 @@ export async function POST(req: Request) {
                         objetivos: "[]",
                     }
                 },
-                assinatura: planoId ? {
+                assinaturas: planoId ? {
                     create: {
                         planoId,
                         status: 'ATIVA',
@@ -193,7 +198,7 @@ export async function POST(req: Request) {
             name: requestBody.name || "Aluno Mockado",
             email: requestBody.email || "mock@simulado.com",
             role: "ALUNO",
-            assinatura: { status: "ATIVA", plano: { nome: requestBody.planoId ? "Plano Mock" : "Sem Plano" } },
+            assinaturas: { status: "ATIVA", plano: { nome: requestBody.planoId ? "Plano Mock" : "Sem Plano" } },
             treinoLogs: []
         };
         db.users.unshift(newUser);

@@ -21,7 +21,7 @@ export async function GET() {
         await prisma.avaliacao.deleteMany();
         await prisma.alunoProfile.deleteMany();
         await prisma.pagamento.deleteMany();
-        await prisma.assinatura.deleteMany();
+        await prisma.assinaturas[0].deleteMany();
         await prisma.plano.deleteMany();
         await prisma.user.deleteMany();
 
@@ -217,7 +217,7 @@ export async function GET() {
                     treinoLogs: {
                         create: logs
                     },
-                    assinatura: {
+                    assinaturas: {
                         create: {
                             status: a.status as any,
                             plano: {

@@ -11,7 +11,7 @@ const MOCK_USERS = [
         role: "ALUNO",
         avatar: "https://ui-avatars.com/api/?name=Carlos+Silva&background=random",
         atribuicoes: [{ treinoId: "mock-treino-1", treino: { nome: "Hipertrofia A" } }],
-        assinatura: { status: "ATIVA", plano: { nome: "Premium" } },
+        assinaturas: { status: "ATIVA", plano: { nome: "Premium" } },
         treinoLogs: []
     },
     {
@@ -21,7 +21,7 @@ const MOCK_USERS = [
         role: "ALUNO",
         avatar: "https://ui-avatars.com/api/?name=Ana+Pereira&background=random",
         atribuicoes: [{ treinoId: "mock-treino-2", treino: { nome: "Perda de Peso" } }],
-        assinatura: { status: "SUSPENSA", plano: { nome: "Básico" } },
+        assinaturas: { status: "SUSPENSA", plano: { nome: "Básico" } },
         treinoLogs: []
     },
     {
@@ -31,7 +31,7 @@ const MOCK_USERS = [
         role: "ALUNO",
         avatar: "https://ui-avatars.com/api/?name=Roberto+Costa&background=random",
         atribuicoes: [],
-        assinatura: { status: "CANCELADA", plano: { nome: "Standard" } },
+        assinaturas: { status: "CANCELADA", plano: { nome: "Standard" } },
         treinoLogs: []
     }
 ];
@@ -58,7 +58,7 @@ export async function GET(
                     ...localUser,
                     atribuicoes: Array(numName % 3).fill({ treino: { nome: 'Treino Gerado' } }),
                     taxaAdesao: 70 + (numName * 2), // random pseudo 70-100
-                    assinatura: {
+                    assinaturas: {
                         status: localUser.status === 'EXCLUIDA' ? 'CANCELADA' : 'ATIVA',
                         plano: { nome: numName % 2 === 0 ? 'Premium' : 'Básico' }
                     },
@@ -90,7 +90,7 @@ export async function GET(
                         }
                     }
                 },
-                assinatura: {
+                assinaturas: {
                     include: {
                         plano: true
                     }
@@ -128,7 +128,7 @@ export async function GET(
                 ...localUser,
                 atribuicoes: Array(numName % 3).fill({ treino: { nome: 'Treino Gerado' } }),
                 taxaAdesao: 70 + (numName * 2), // random pseudo 70-100
-                assinatura: {
+                assinaturas: {
                     status: localUser.status === 'EXCLUIDA' ? 'CANCELADA' : 'ATIVA',
                     plano: { nome: numName % 2 === 0 ? 'Premium' : 'Básico' }
                 },
@@ -238,7 +238,7 @@ export async function PUT(
         }
 
         if (status) {
-            await prisma.assinatura.upsert({
+            await prisma.assinaturas[0].upsert({
                 where: { userId: id },
                 update: { status },
                 create: { 
@@ -251,7 +251,7 @@ export async function PUT(
                 // então não fazemos nada por enquanto, ou pegamos um plano padrão.
                 const defaultPlan = await prisma.plano.findFirst();
                 if (defaultPlan) {
-                    await prisma.assinatura.upsert({
+                    await prisma.assinaturas[0].upsert({
                         where: { userId: id },
                         update: { status },
                         create: { userId: id, status, planoId: defaultPlan.id }
@@ -266,7 +266,7 @@ export async function PUT(
                 const dataInicio = new Date();
                 const dataFim = new Date();
                 dataFim.setMonth(dataFim.getMonth() + Number(plano.intervalo || 1));
-                await prisma.assinatura.upsert({
+                await prisma.assinaturas[0].upsert({
                     where: { userId: id },
                     create: { userId: id, planoId: plano.id, status: status || 'ATIVA', dataInicio, dataFim },
                     update: { planoId: plano.id, status: status || 'ATIVA', dataFim }
@@ -343,7 +343,7 @@ export async function DELETE(
 
         // Real DB deletion: delete related records first
         await prisma.atribuicaoTreino.deleteMany({ where: { alunoId: id } });
-        await prisma.assinatura.deleteMany({ where: { userId: id } });
+        await prisma.assinaturas[0].deleteMany({ where: { userId: id } });
         await prisma.user.delete({ where: { id } });
 
         return NextResponse.json({ message: "User permanently deleted" });
