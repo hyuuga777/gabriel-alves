@@ -21,7 +21,7 @@ export async function GET() {
         await prisma.avaliacao.deleteMany();
         await prisma.alunoProfile.deleteMany();
         await prisma.pagamento.deleteMany();
-        await prisma.assinaturas[0].deleteMany();
+        await prisma.assinatura.deleteMany();
         await prisma.plano.deleteMany();
         await prisma.user.deleteMany();
 
@@ -185,6 +185,7 @@ export async function GET() {
         for (const [index, a] of alumnosData.entries()) {
             const treinoSelecionado = index % 3 === 0 ? treinoA : (index % 3 === 1 ? treinoB : treinoC);
             const logs = a.activityPatterns.map(daysAgo => ({
+                treinadorId: admin.id,
                 treinoNome: treinoSelecionado.nome,
                 treinoId: treinoSelecionado.id,
                 completo: true,
@@ -197,6 +198,7 @@ export async function GET() {
                     email: a.email,
                     password: (a as any).password || password,
                     role: 'ALUNO',
+                    treinadorId: admin.id,
                     avatar: `https://ui-avatars.com/api/?name=${a.nome.replace(' ', '+')}&background=random`,
                     alunoProfile: {
                         create: {
@@ -219,6 +221,7 @@ export async function GET() {
                     },
                     assinaturas: {
                         create: {
+                            treinadorId: admin.id,
                             status: a.status as any,
                             plano: {
                                 create: {
