@@ -191,7 +191,8 @@ async function main() {
                         status: a.status as any,
                         planoId: a.planoId,
                         dataInicio: new Date(),
-                        dataFim: new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+                        dataFim: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+                        treinadorId: admin.id
                     }
                 }
             }
