@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
       where: { email }
     });
 
-    if (user) {
+    if (user && user.email) {
       // Gerar token seguro de 32 bytes
       const token = crypto.randomBytes(32).toString('hex');
       const expiry = new Date(Date.now() + 3600000); // 1 hora de validade

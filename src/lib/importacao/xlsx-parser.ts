@@ -165,7 +165,7 @@ export function parseXlsxBuffer(buffer: ArrayBuffer): AlunoImport[] {
                 
                 // Mapeia #REF! para explícito nulo mas mantendo a raw
                 if (bfField && bfField.value === 'NOT_CALCULATED') {
-                    bfField.value = null;
+                    bfField.value = null as any;
                 }
 
                 if (imcField && imcField.value === 'NOT_CALCULATED') {
@@ -181,7 +181,7 @@ export function parseXlsxBuffer(buffer: ArrayBuffer): AlunoImport[] {
                             confidence: 'Fórmula Inferida'
                         };
                     } else {
-                        imcField.value = null;
+                        imcField.value = null as any;
                     }
                 }
                 

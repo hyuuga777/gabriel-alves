@@ -26,12 +26,12 @@ async function main() {
     
     console.log(`Encontrados ${alunos.length} alunos.`);
     const aluno = alunos[0];
-    console.log(`- Nome: ${aluno.nome}`);
-    console.log(`- E-mail Gerado: ${aluno.email}`);
-    console.log(`- Data de Nascimento (ISO): ${aluno.dataNascimento?.toISOString()}`);
+    console.log(`- Nome: ${aluno.nome.value}`);
+    console.log(`- E-mail Gerado: ${aluno.email?.value}`);
+    console.log(`- Data de Nascimento (ISO): ${aluno.dataNascimento?.value.toISOString()}`);
     console.log(`- Avaliações Encontradas: ${aluno.avaliacoes.length}`);
     aluno.avaliacoes.forEach((av, i) => {
-        console.log(`  Avaliação ${i+1}: Data: ${av.data?.toISOString()}, Peso: ${av.peso}, BF: ${av.percentualGordura}`);
+        console.log(`  Avaliação ${i+1}: Data: ${av.data?.value.toISOString()}, Peso: ${av.peso?.value}, BF: ${av.percentualGordura?.value}`);
     });
     
     console.log("=== Teste de parser OK. ===");

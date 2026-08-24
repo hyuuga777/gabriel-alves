@@ -13,10 +13,16 @@ export async function POST(req: Request) {
         const body = await req.json();
         const { treinoId, treinoNome, dataInicio, dataFim, exercicios } = body;
 
+        const user = await prisma.user.findUnique({ where: { id: userId }, select: { treinadorId: true } });
+        if (!user || !user.treinadorId) {
+            return NextResponse.json({ error: 'Treinador não encontrado para este aluno' }, { status: 400 });
+        }
+
         // Criar o log do treino
         const treinoLog = await prisma.treinoLog.create({
             data: {
                 alunoId: userId,
+                treinadorId: user.treinadorId,
                 treinoId,
                 treinoNome,
                 dataInicio: new Date(dataInicio),

@@ -27,10 +27,12 @@ export async function GET() {
                 where: {
                     role: 'ALUNO',
                     assinaturas: {
-                        OR: [
-                            { status: { in: ['EXPIRADA', 'SUSPENSA', 'CANCELADA'] } },
-                            { dataFim: { lt: daquiA7Dias } }
-                        ]
+                        some: {
+                            OR: [
+                                { status: { in: ['EXPIRADA', 'SUSPENSA', 'CANCELADA'] } },
+                                { dataFim: { lt: daquiA7Dias } }
+                            ]
+                        }
                     }
                 },
                 select: {
@@ -50,17 +52,13 @@ export async function GET() {
                             }
                         }
                     }
-                },
-                orderBy: {
-                    assinaturas: {
-                        dataFim: 'asc'
-                    }
                 }
             });
 
             const formatados = inadimplentes.map(user => {
-                const isVencido = user.assinatura?.dataFim && new Date(user.assinaturas[0].dataFim) < hoje;
-                const statusFinal = (user.assinatura?.status === 'ATIVA' && isVencido) ? 'EXPIRADA' : user.assinatura?.status;
+                const assinatura = user.assinaturas?.[0];
+                const isVencido = assinatura?.dataFim && new Date(assinatura.dataFim) < hoje;
+                const statusFinal = (assinatura?.status === 'ATIVA' && isVencido) ? 'EXPIRADA' : assinatura?.status;
 
                 return {
                     id: user.id,
@@ -68,8 +66,8 @@ export async function GET() {
                     email: user.email,
                     telefone: user.telefone,
                     avatar: user.avatar,
-                    plano: user.assinatura?.plano?.nome || 'Sem Plano',
-                    dataFim: user.assinatura?.dataFim,
+                    plano: assinatura?.plano?.nome || 'Sem Plano',
+                    dataFim: assinatura?.dataFim,
                     status: statusFinal,
                     isVencido
                 };
@@ -82,14 +80,15 @@ export async function GET() {
             const formatados = (db.users || [])
                 .filter((u: any) => u.role === 'ALUNO')
                 .map((user: any) => {
-                    const isVencido = user.assinatura?.status === 'CANCELADA' || user.assinatura?.status === 'SUSPENSA';
+                    const assinatura = user.assinaturas?.[0] || user.assinatura;
+                    const isVencido = assinatura?.status === 'CANCELADA' || assinatura?.status === 'SUSPENSA';
                     return {
                         id: user.id,
                         name: user.name,
                         email: user.email,
                         telefone: user.telefone || '5511999999999',
                         avatar: user.avatar,
-                        plano: user.assinatura?.plano?.nome || 'Sem Plano',
+                        plano: assinatura?.plano?.nome || 'Sem Plano',
                         dataFim: new Date().toISOString(),
                         status: isVencido ? 'EXPIRADA' : 'ATIVA',
                         isVencido

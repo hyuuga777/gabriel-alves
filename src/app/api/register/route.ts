@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
 
         // Enviar e-mail de boas-vindas assincronamente (sem travar resposta se falhar)
         import('../../../lib/mail').then(({ sendWelcomeEmail }) => {
-            sendWelcomeEmail({ to: user.email, name: user.name, email: user.email }).catch(console.error);
+            sendWelcomeEmail({ to: user.email!, name: user.name, email: user.email! }).catch(console.error);
         });
 
         return NextResponse.json({
