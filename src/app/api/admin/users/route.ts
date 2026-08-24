@@ -180,7 +180,8 @@ export async function POST(req: Request) {
                         planoId,
                         status: 'ATIVA',
                         dataInicio: new Date(),
-                        dataFim
+                        dataFim,
+                        treinadorId: (session.user as any).id
                     }
                 } : undefined
             }

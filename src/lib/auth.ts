@@ -27,7 +27,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                         include: { alunoProfile: true }
                     })
 
-                    if (!user) {
+                    if (!user || !user.password) {
                         // Fallback for development if DB is connected but user not found (optional, but focusing on DB error mainly)
                         // Actually, sticking to standard behavior: if no user, return null.
                         // But if we want to force login for dev:

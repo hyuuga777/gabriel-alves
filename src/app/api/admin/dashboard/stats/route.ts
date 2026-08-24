@@ -15,8 +15,10 @@ export async function GET() {
         const activeStudents = await prisma.user.count({
             where: {
                 role: 'ALUNO',
-                assinatura: {
-                    status: 'ATIVA'
+                assinaturas: {
+                    some: {
+                        status: 'ATIVA'
+                    }
                 }
             }
         });
@@ -44,7 +46,7 @@ export async function GET() {
             where: {
                 role: 'ALUNO',
                 id: { notIn: studentIdsWithRecentEval },
-                assinatura: { status: 'ATIVA' }
+                assinaturas: { some: { status: 'ATIVA' } }
             }
         });
 

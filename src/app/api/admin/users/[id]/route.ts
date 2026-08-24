@@ -238,26 +238,18 @@ export async function PUT(
         }
 
         if (status) {
-            await prisma.assinaturas[0].upsert({
-                where: { userId: id },
-                update: { status },
-                create: { 
-                    userId: id, 
-                    status,
-                    planoId: "dummy-plano-not-found" // Fallback but this will fail relation constraint if plan doesn't exist
-                }
-            }).catch(async () => {
-                // Se falhar porque não temos um planoId (é obrigatório na tabela), 
-                // então não fazemos nada por enquanto, ou pegamos um plano padrão.
+            const firstAssinatura = await prisma.assinatura.findFirst({ where: { userId: id } });
+            if (firstAssinatura) {
+                await prisma.assinatura.update({ where: { id: firstAssinatura.id }, data: { status } });
+            } else {
                 const defaultPlan = await prisma.plano.findFirst();
-                if (defaultPlan) {
-                    await prisma.assinaturas[0].upsert({
-                        where: { userId: id },
-                        update: { status },
-                        create: { userId: id, status, planoId: defaultPlan.id }
+                const user = await prisma.user.findUnique({ where: { id } });
+                if (defaultPlan && user && user.treinadorId) {
+                    await prisma.assinatura.create({
+                        data: { userId: id, status, planoId: defaultPlan.id, treinadorId: user.treinadorId }
                     });
                 }
-            });
+            }
         }
 
         if (planoId) {
@@ -266,11 +258,20 @@ export async function PUT(
                 const dataInicio = new Date();
                 const dataFim = new Date();
                 dataFim.setMonth(dataFim.getMonth() + Number(plano.intervalo || 1));
-                await prisma.assinaturas[0].upsert({
-                    where: { userId: id },
-                    create: { userId: id, planoId: plano.id, status: status || 'ATIVA', dataInicio, dataFim },
-                    update: { planoId: plano.id, status: status || 'ATIVA', dataFim }
-                });
+                const firstAssinatura = await prisma.assinatura.findFirst({ where: { userId: id } });
+                if (firstAssinatura) {
+                    await prisma.assinatura.update({
+                        where: { id: firstAssinatura.id },
+                        data: { planoId: plano.id, status: status || 'ATIVA', dataFim }
+                    });
+                } else {
+                    const user = await prisma.user.findUnique({ where: { id } });
+                    if (user && user.treinadorId) {
+                        await prisma.assinatura.create({
+                            data: { userId: id, planoId: plano.id, status: status || 'ATIVA', dataInicio, dataFim, treinadorId: user.treinadorId }
+                        });
+                    }
+                }
             }
         }
 
@@ -342,8 +343,10 @@ export async function DELETE(
         }
 
         // Real DB deletion: delete related records first
+        await prisma.treinoLog.deleteMany({ where: { alunoId: id } });
         await prisma.atribuicaoTreino.deleteMany({ where: { alunoId: id } });
-        await prisma.assinaturas[0].deleteMany({ where: { userId: id } });
+        await prisma.assinatura.deleteMany({ where: { userId: id } });
+        await prisma.alunoProfile.delete({ where: { userId: id } }).catch(() => {});
         await prisma.user.delete({ where: { id } });
 
         return NextResponse.json({ message: "User permanently deleted" });

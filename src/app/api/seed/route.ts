@@ -21,7 +21,7 @@ export async function GET() {
         await prisma.avaliacao.deleteMany();
         await prisma.alunoProfile.deleteMany();
         await prisma.pagamento.deleteMany();
-        await prisma.assinaturas[0].deleteMany();
+        await prisma.assinatura.deleteMany();
         await prisma.plano.deleteMany();
         await prisma.user.deleteMany();
 
@@ -187,6 +187,7 @@ export async function GET() {
             const logs = a.activityPatterns.map(daysAgo => ({
                 treinoNome: treinoSelecionado.nome,
                 treinoId: treinoSelecionado.id,
+                treinadorId: admin.id,
                 completo: true,
                 createdAt: new Date(new Date().setDate(new Date().getDate() - daysAgo))
             }));
@@ -220,6 +221,7 @@ export async function GET() {
                     assinaturas: {
                         create: {
                             status: a.status as any,
+                            treinadorId: admin.id,
                             plano: {
                                 create: {
                                     nome: a.plano,
