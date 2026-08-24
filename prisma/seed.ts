@@ -186,7 +186,7 @@ async function main() {
                         objetivos: JSON.stringify(['Hipertrofia'])
                     }
                 },
-                assinatura: {
+                assinaturas: {
                     create: {
                         status: a.status as any,
                         planoId: a.planoId,
