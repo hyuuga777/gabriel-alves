@@ -175,6 +175,7 @@ async function main() {
                 email: a.email,
                 password: password,
                 role: 'ALUNO',
+                treinadorId: admin.id,
                 avatar: `https://ui-avatars.com/api/?name=${a.nome.replace(' ', '+')}&background=random`,
                 alunoProfile: {
                     create: {

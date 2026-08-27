@@ -307,9 +307,7 @@ export function AnamneseTab({ student, onUpdate }: { student: any, onUpdate: () 
                             <tr className="border-b border-white/10 bg-white/5 text-xs uppercase tracking-wider text-primary">
                                 <th className="p-3 font-semibold whitespace-nowrap min-w-[200px] border-r border-white/10 sticky left-0 bg-[#1a1a1a] z-10">Métodos</th>
                                 <th className="p-3 font-semibold border-r border-white/10 min-w-[120px]">Data 1</th>
-                                <th className="p-3 font-semibold border-r border-white/10 min-w-[120px]">Data 2</th>
-                                <th className="p-3 font-semibold border-r border-white/10 min-w-[120px]">Data 3</th>
-                                <th className="p-3 font-semibold border-r border-white/10 min-w-[120px]">Data 4</th>
+
                                 <th className="p-3 font-semibold border-r border-white/10 min-w-[200px]">Observações</th>
                                 <th className="p-3 font-semibold border-r border-white/10 min-w-[100px]">Peso</th>
                                 <th className="p-3 font-semibold min-w-[150px]">% Gordura / Res.</th>
@@ -335,33 +333,7 @@ export function AnamneseTab({ student, onUpdate }: { student: any, onUpdate: () 
                                                 className="w-full bg-transparent p-3 text-white focus:bg-white/10 focus:outline-none placeholder:text-white/20"
                                             />
                                         </td>
-                                        <td className="p-0 border-r border-white/10">
-                                            <input 
-                                                type="text" 
-                                                value={row.datas[1]}
-                                                onChange={(e) => handleMetodoChange(idx, 'data1', e.target.value)}
-                                                placeholder="dd/mm" 
-                                                className="w-full bg-transparent p-3 text-white focus:bg-white/10 focus:outline-none placeholder:text-white/20"
-                                            />
-                                        </td>
-                                        <td className="p-0 border-r border-white/10">
-                                            <input 
-                                                type="text" 
-                                                value={row.datas[2]}
-                                                onChange={(e) => handleMetodoChange(idx, 'data2', e.target.value)}
-                                                placeholder="dd/mm" 
-                                                className="w-full bg-transparent p-3 text-white focus:bg-white/10 focus:outline-none placeholder:text-white/20"
-                                            />
-                                        </td>
-                                        <td className="p-0 border-r border-white/10">
-                                            <input 
-                                                type="text" 
-                                                value={row.datas[3]}
-                                                onChange={(e) => handleMetodoChange(idx, 'data3', e.target.value)}
-                                                placeholder="dd/mm" 
-                                                className="w-full bg-transparent p-3 text-white focus:bg-white/10 focus:outline-none placeholder:text-white/20"
-                                            />
-                                        </td>
+
                                         <td className="p-0 border-r border-white/10">
                                             <input 
                                                 type="text" 
